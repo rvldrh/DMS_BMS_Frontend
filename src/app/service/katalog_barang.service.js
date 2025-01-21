@@ -7,6 +7,7 @@ export const fetchKatalogBarang = async () => {
     const response = await axios.get(`${API_URL}katalog_barang`, {
       headers: headers, // Header prmintaan
       withCredentials: true, // Menggunakan credentials
+      origin: "https://backend-dms-lyart.vercel.app/"
     });
     return response.data; // Mengembalikan data dari response
   } catch (error) {
