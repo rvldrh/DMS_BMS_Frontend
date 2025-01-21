@@ -20,7 +20,7 @@ export const fetchKatalogBarang = async () => {
 // Fungsi untuk mendapatkan Katalog Barang berdasarkan ID
 export const getKatalogBarangById = async (id) => {
   try {
-    const response = await axios.get<KatalogBarang>(`${API_URL}katalog_barang/${id}`, {
+    const response = await axios.get(`${API_URL}katalog_barang/${id}`, {
       headers: headers,
       withCredentials: true,
     });
