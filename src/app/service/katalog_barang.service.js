@@ -23,6 +23,7 @@ export const getKatalogBarangById = async (id) => {
     const response = await axios.get(`${API_URL}katalog_barang/${id}`, {
       headers: headers,
       withCredentials: true,
+      origin: "https://backend-dms-lyart.vercel.app/"
     });
     return response.data;
   } catch (error) {
