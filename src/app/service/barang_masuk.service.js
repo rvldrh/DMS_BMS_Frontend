@@ -5,6 +5,7 @@ export const getBarangMasuk = async () => {
   try {
     const response = await axios.get(`${API_URL}barang_masuk`, {
       headers: headers,
+      withCredentials: true
     });
     return response.data;
   } catch (error) {
@@ -17,6 +18,7 @@ export const addBarangMasuk = async (data) => {
   try {
     const response = await axios.post(`${API_URL}barang_masuk`, data, {
       headers: headers,
+      withCredentials: true
     });
     return response.data;
   } catch (error) {

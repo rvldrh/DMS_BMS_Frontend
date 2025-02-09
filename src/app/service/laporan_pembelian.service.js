@@ -5,7 +5,10 @@ export const getLaporanPembelian = async () => {
   try {
     const response = await axios.get(
       `${API_URL}laporan`,
-      { headers }
+      { 
+        headers,
+        withCredentials: true
+       }
     );
     return response.data;
   } catch (error) {
@@ -18,6 +21,7 @@ export const addLaporanPembelian = async (data) => {
   try {
     const response = await axios.post(`${API_URL}laporan`, data, {
       headers: headers,
+      withCredentials: true
     });
     return response.data;
   } catch (error) {

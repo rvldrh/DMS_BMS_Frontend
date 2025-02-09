@@ -5,7 +5,10 @@ export const getLaporanPenjualan = async () => {
   try {
     const response = await axios.get(
       `${API_URL}laporan_penjualan`,
-      { headers }
+      { 
+        headers,
+        withCredentials: true
+       }
     );
     return response.data;
   } catch (error) {
@@ -18,6 +21,7 @@ export const addLaporanPenjualan = async (data) => {
   try {
     const response = await axios.post(`${API_URL}laporan_penjualan`, data, {
       headers: headers,
+      withCredentials: true
     });
     return response.data;
   } catch (error) {
@@ -30,6 +34,7 @@ export const getLaporanPenjualanById = async (id) => {
   try {
     const response = await axios.get(`${API_URL}laporan_penjualan/${id}`, {
       headers: headers,
+      withCredentials: true
     });
     return response.data;
   } catch (error) {
