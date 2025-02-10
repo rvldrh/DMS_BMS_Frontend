@@ -1,4 +1,4 @@
-export const API_URL = 'https://backend-dms-lyart.vercel.app/'
+export const API_URL = 'https://backend-dms-lyart.vercel.app/api/'
 export const headers = {
   'Content-Type': 'application/json',
 }
