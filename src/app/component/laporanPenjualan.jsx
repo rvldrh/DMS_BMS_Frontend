@@ -16,6 +16,7 @@ import {
 import {
   getLaporanPenjualan,
 } from "../service/laporan_penjualan.service";
+import { Spinner } from "./spinner";
 
 export const LaporanPenjualanTable = () => {
   const [laporanPenjualan, setLaporanPenjualan] = useState([]);
@@ -59,7 +60,7 @@ export const LaporanPenjualanTable = () => {
   return (
     <div>
       {loading ? (
-        <CircularProgress />
+        <Spinner />
       ) : error ? (
         <div style={{ color: "red" }}>{error}</div>
       ) : (

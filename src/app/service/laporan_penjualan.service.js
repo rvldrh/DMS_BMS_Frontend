@@ -21,14 +21,16 @@ export const addLaporanPenjualan = async (data) => {
   try {
     const response = await axios.post(`${API_URL}laporan_penjualan`, data, {
       headers: headers,
-      withCredentials: true
+      withCredentials: true,
+      mode: "cors", // Tambahkan ini
     });
     return response.data;
   } catch (error) {
     console.error("Error adding laporan_penjualan penjualan:", error);
     throw error;
   }
-}
+};
+
 
 export const getLaporanPenjualanById = async (id) => {
   try {
