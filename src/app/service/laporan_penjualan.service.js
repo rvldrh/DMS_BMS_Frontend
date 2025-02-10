@@ -22,6 +22,7 @@ export const addLaporanPenjualan = async (data) => {
     const response = await axios.post(`${API_URL}laporan_penjualan`, data, {
       headers: headers,
       withCredentials: true,
+      mode: 'cors'
     });
     
     console.log("Response dari backend:", response.data); // Cek response
