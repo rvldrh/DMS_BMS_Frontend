@@ -26,11 +26,21 @@ export const addLaporanPenjualan = async (data) => {
       credentials: "include",
     });
     
-    console.log("Response dari backend:", response.data); // Cek response
-
-    return response.data;
+    // Perubahan kode:
+    // Cek apakah request berhasil
+    if (response.status === 201) {
+      console.log("Laporan Penjualan created successfully:", response.data);
+      return response.data;
+    } else {
+      throw new Error(`Request failed with status ${response.status}`);
+    }
   } catch (error) {
     console.error("Error adding laporan_penjualan penjualan:", error);
+    if (axios.isAxiosError(error)) {
+      if (error.response.data.message === "Missing or invalid required fields") {
+        throw new Error("Data tidak lengkap atau tidak valid");
+      }
+    }
     throw error;
   }
 };
