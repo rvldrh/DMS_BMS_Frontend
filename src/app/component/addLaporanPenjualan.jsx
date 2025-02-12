@@ -63,52 +63,75 @@ export const LaporanPenjualanForm = () => {
 
 	const handleSubmit = async (event) => {
 		event.preventDefault();
-
+	  
 		console.log("Data sebelum dikirim:", formData.item); // Debugging
-
+	  
 		// Pastikan tidak ada item yang kosong atau undefined
 		const validItems = formData.item.filter((item) => item._id && item.qty > 0);
-
+	  
 		if (validItems.length === 0) {
-			alert(
-				"Harap tambahkan setidaknya satu item dengan ID dan jumlah yang valid.",
-			);
-			return;
+		  alert(
+			"Harap tambahkan setidaknya satu item dengan ID dan jumlah yang valid.",
+		  );
+		  return;
 		}
-
+	  
 		try {
-			const finalData = {
-				tanggal: formData.tanggal,
-				no_invoice: formData.no_invoice,
-				tgl_jatuhTempo: formData.tgl_jatuhTempo,
-				item: validItems.map((item) => ({
-					_id: item._id, // Pastikan tidak undefined
-					qty: Number(item.qty), // Pastikan qty adalah angka
-				})),
-				ppn: parseFloat(formData.ppn), // Konversi ke angka jika perlu
-				kepada: formData.kepada,
+		  // Fetch harga barang dari katalog
+		  const katalogBarang = await fetchKatalogBarang();
+	  
+		  // Hitung subtotal, jumlah, dan grand_total
+		  let subtotal = 0;
+		  const updatedItems = validItems.map((item) => {
+			const barang = katalogBarang.data.find((b) => b._id === item._id);
+			if (!barang) {
+			  throw new Error(`Barang dengan ID ${item._id} tidak ditemukan.`);
+			}
+	  
+			const jumlah = barang.harga * item.qty;
+			subtotal += jumlah;
+	  
+			return {
+			  _id: item._id,
+			  qty: item.qty,
+			  jumlah: jumlah,
 			};
-
-			console.log("Data yang dikirim:", finalData); // Debugging
-
-			const response = await addLaporanPenjualan(finalData);
-			console.log("Laporan Penjualan added:", response);
-			alert("Laporan Penjualan added successfully!");
-
-			// Reset form setelah berhasil submit
-			setFormData({
-				tanggal: "",
-				no_invoice: "",
-				tgl_jatuhTempo: "",
-				item: [{ _id: "", qty: 0 }],
-				ppn: 0,
-				kepada: "",
-			});
+		  });
+	  
+		  const ppnValue = subtotal * parseFloat(formData.ppn);
+		  const grand_total = subtotal + ppnValue;
+	  
+		  const finalData = {
+			tanggal: formData.tanggal,
+			no_invoice: formData.no_invoice,
+			tgl_jatuhTempo: formData.tgl_jatuhTempo,
+			item: updatedItems,
+			ppn: parseFloat(formData.ppn),
+			subtotal: subtotal,
+			grand_total: grand_total,
+			kepada: formData.kepada,
+		  };
+	  
+		  const response = await addLaporanPenjualan(finalData);
+		  console.log("Data yang dikirim:", finalData); // Debugging
+	  
+		  console.log("Laporan Penjualan added:", response);
+		  alert("Laporan Penjualan added successfully!");
+	  
+		  // Reset form setelah berhasil submit
+		  setFormData({
+			tanggal: "",
+			no_invoice: "",
+			tgl_jatuhTempo: "",
+			item: [{ _id: "", qty: 0 }],
+			ppn: 0,
+			kepada: "",
+		  });
 		} catch (error) {
-			console.error("Error submitting form:", error);
-			alert("Error adding Laporan Penjualan.");
+		  console.error("Error submitting form:", error);
+		  alert("Error adding Laporan Penjualan.");
 		}
-	};
+	  };
 
 	if (!isClient) {
 		return null;

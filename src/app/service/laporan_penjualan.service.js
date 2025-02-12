@@ -21,9 +21,6 @@ export const addLaporanPenjualan = async (data) => {
   try {
     const response = await axios.post(`${API_URL}laporan_penjualan`, data, {
       headers: headers,
-      withCredentials: true,
-      mode: 'cors',
-      credentials: "include",
     });
     
     // Perubahan kode:

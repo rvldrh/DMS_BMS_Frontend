@@ -41,7 +41,6 @@ export const addKatalogBarang = async (data) => {
   try {
     const response = await axios.post(`${API_URL}katalog_barang`, data, {
       headers: headers,
-      withCredentials: true,
     });
     return response.data;
   } catch (error) {
