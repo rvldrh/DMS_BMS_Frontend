@@ -27,17 +27,10 @@ export const InvoiceComponent = ({ invoiceId }) => {
     }
   }, [invoiceId?.data]);
 
-  // if (laporanLoading) {
-  //   return <Spinner />;
-  // }
+  if (laporanLoading) {
+    return <Spinner />;
+  }
 
-  // if (laporanError instanceof Error) {
-  //   return <div>Error: {laporanError?.message}</div>;
-  // }
-
-  // if (!invoiceId) {
-  //   return <div>No data found</div>;
-  // }
 
   const ppnAmount = invoiceId?.data?.subtotal * invoiceId?.data?.ppn;
   const grandTotal = invoiceId?.data?.subtotal + ppnAmount;

@@ -64,9 +64,8 @@ export const LaporanPenjualanForm = () => {
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 	  
-		console.log("Data sebelum dikirim:", formData.item); // Debugging
+		console.log("Data sebelum dikirim:", formData.item);
 	  
-		// Pastikan tidak ada item yang kosong atau undefined
 		const validItems = formData.item.filter((item) => item._id && item.qty > 0);
 	  
 		if (validItems.length === 0) {
@@ -77,10 +76,8 @@ export const LaporanPenjualanForm = () => {
 		}
 	  
 		try {
-		  // Fetch harga barang dari katalog
 		  const katalogBarang = await fetchKatalogBarang();
 	  
-		  // Hitung subtotal, jumlah, dan grand_total
 		  let subtotal = 0;
 		  const updatedItems = validItems.map((item) => {
 			const barang = katalogBarang.data.find((b) => b._id === item._id);

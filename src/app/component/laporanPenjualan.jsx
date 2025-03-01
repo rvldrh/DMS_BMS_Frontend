@@ -23,7 +23,7 @@ export const LaporanPenjualanTable = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5); // Set the number of rows per page
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   useEffect(() => {
     const fetchLaporanPenjualan = async () => {
@@ -41,20 +41,17 @@ export const LaporanPenjualanTable = () => {
   }, []);
 
 
-  // Pagination change handler
   const handleChangePage = (
     event,
     newPage
   ) => {
     setPage(newPage);
   };
-
-  // Handle change of rows per page
   const handleChangeRowsPerPage = (
     event
   ) => {
     setRowsPerPage(Number.parseInt(event.target.value, 10));
-    setPage(0); // Reset to first page when rows per page changes
+    setPage(0);
   };
 
   return (
@@ -83,7 +80,6 @@ export const LaporanPenjualanTable = () => {
                   ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((laporan) => (
                     <TableRow key={laporan._id}>
-                      { console.log("id: ",laporan._id) }
                       <TableCell>{laporan.tanggal}</TableCell>
                       <TableCell>{laporan.no_invoice}</TableCell>
                       <TableCell>{laporan.subtotal}</TableCell>

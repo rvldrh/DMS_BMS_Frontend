@@ -4,50 +4,65 @@ export const headers = {
 }
 // Modifikasi fungsi numberToWords untuk mendukung desimal
 export const numberToWords = (num) => {
-  if (num < 0 || isNaN(num)) return 'Nomor tidak valid';
+  if (isNaN(num) || num < 0) return "Nomor tidak valid";
 
-  const numberToWord = (n) => {
-    const words = [
-      '', 'Satu', 'Dua', 'Tiga', 'Empat', 'Lima', 'Enam', 'Tujuh', 'Delapan', 'Sembilan',
-    ];
-    const scales = ['', 'Ribu', 'Juta', 'Miliar', 'Triliun'];
-    if (n === 0) return 'Nol';
+  const satuan = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan"];
+  const belasan = ["Sepuluh", "Sebelas", "Dua Belas", "Tiga Belas", "Empat Belas", "Lima Belas", "Enam Belas", "Tujuh Belas", "Delapan Belas", "Sembilan Belas"];
+  const puluhan = ["", "", "Dua Puluh", "Tiga Puluh", "Empat Puluh", "Lima Puluh", "Enam Puluh", "Tujuh Puluh", "Delapan Puluh", "Sembilan Puluh"];
+  const ribuan = ["", "Ribu", "Juta", "Miliar", "Triliun"];
 
-    let word = '';
-    let scaleIndex = 0;
+  const convertThreeDigits = (n) => {
+    let result = "";
 
-    while (n > 0) {
-      const chunk = n % 1000;
-      if (chunk > 0) {
-        const hundreds = Math.floor(chunk / 100);
-        const remainder = chunk % 100;
+    const hundreds = Math.floor(n / 100);
+    const remainder = n % 100;
 
-        const hundredsWord = hundreds > 0 ? `${words[hundreds]} Ratus ` : '';
-        const tensWord =
-          remainder >= 10 && remainder <= 19
-            ? `${words[remainder]}`
-            : remainder >= 20
-            ? `${words[Math.floor(remainder / 10)]} Puluh ${words[remainder % 10]}`
-            : `${words[remainder]}`;
-
-        word = `${hundredsWord}${tensWord} ${scales[scaleIndex]} ${word}`;
-      }
-      n = Math.floor(n / 1000);
-      scaleIndex++;
+    if (hundreds > 0) {
+      result += (hundreds === 1 ? "Seratus" : satuan[hundreds] + " Ratus") + " ";
     }
 
-    return word.trim();
+    if (remainder > 0) {
+      if (remainder < 10) {
+        result += satuan[remainder];
+      } else if (remainder < 20) {
+        result += belasan[remainder - 10];
+      } else {
+        result += puluhan[Math.floor(remainder / 10)] + " " + satuan[remainder % 10];
+      }
+    }
+
+    return result.trim();
   };
 
-  const [integerPart, decimalPart] = num.toFixed(2).split('.').map(Number);
+  if (num === 0) return "Nol Rupiah";
 
-  const integerWords = numberToWord(integerPart);
-  const decimalWords = decimalPart > 0 ? numberToWord(decimalPart) : '';
+  let integerPart = Math.floor(num);
+  let decimalPart = Math.round((num - integerPart) * 100);
+  let words = "";
+  let scaleIndex = 0;
 
-  return decimalWords
-    ? `${integerWords} Koma ${decimalWords}`
-    : `${integerWords} Rupiah`;
+  while (integerPart > 0) {
+    let chunk = integerPart % 1000;
+    if (chunk > 0) {
+      let chunkWords = convertThreeDigits(chunk);
+      if (scaleIndex === 1 && chunk === 1) {
+        chunkWords = "Seribu";
+      }
+      words = chunkWords + " " + ribuan[scaleIndex] + " " + words;
+    }
+    integerPart = Math.floor(integerPart / 1000);
+    scaleIndex++;
+  }
+
+  words = words.trim() + " Rupiah";
+
+  if (decimalPart > 0) {
+    words += " Koma " + convertThreeDigits(decimalPart);
+  }
+
+  return words.trim();
 };
+
 
 
 // Function to format numbers with thousands separatore
