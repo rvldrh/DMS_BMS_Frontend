@@ -48,7 +48,7 @@ export const AddAPAR = () => {
         <input
           type="text"
           name="jenis"
-          placeholder="(Contoh: DCP 3Kg, Co2 3.5kg, Gas cair 2.5kg)"
+          placeholder=" *Contoh: DCP 3Kg, Co2 3.5kg, Gas cair 2.5kg"
           value={newApar.jenis}
           onChange={handleChange}
           className="w-full p-3 border mb-2 rounded-md"
@@ -57,7 +57,7 @@ export const AddAPAR = () => {
         <input
           type="text"
           name="outlet"
-          placeholder="(Contoh: RSSA, Planet Ocean, Puskesmas Wajak)"
+          placeholder=" *Contoh: RSSA, Planet Ocean, Puskesmas Wajak"
           value={newApar.outlet}
           onChange={handleChange}
           className="w-full p-3 border mb-2 rounded-md"
@@ -66,7 +66,7 @@ export const AddAPAR = () => {
         <input
           type="text"
           name="marketing"
-          placeholder="( Siapa penginput data APAR ini)"
+          placeholder=" *Siapa penginput data APAR ini"
           value={newApar.marketing}
           onChange={handleChange}
           className="w-full p-3 border mb-2 rounded-md"
