@@ -3,23 +3,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getApar, addApar } from "@/app/service/apar.service";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableContainer,
-	TableHead,
-	TableRow,
-	Paper,
-	Typography,
-	CircularProgress,
-	Button,
-	Dialog,
-	DialogActions,
-	DialogContent,
-	DialogTitle,
-	TextField,
-} from "@mui/material";
 import { toast } from "react-hot-toast";
 
 const ITEMS_PER_PAGE = 5;
@@ -36,8 +19,8 @@ export const ListAPAR = () => {
 	const [openAdd, setOpenAdd] = useState(false);
 	const [newApar, setNewApar] = useState({
 		jenis: "",
-		nama_pemilik: "",
-		tanggal_refill: "",
+		outlet: "",
+		marketing: "",
 		tanggal_exp: "",
 	});
 
@@ -73,7 +56,7 @@ export const ListAPAR = () => {
 	};
 
 	const handleSubmit = async () => {
-		if (!newApar.jenis || !newApar.nama_pemilik) {
+		if (!newApar.jenis || !newApar.outlet || !newApar.marketing || !newApar.tanggal_exp) {
 			toast.error("Harap isi semua field!");
 			return;
 		}
@@ -82,77 +65,71 @@ export const ListAPAR = () => {
 
 	const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
 	const paginatedData = apars?.data?.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-
+    console.log(newApar)
 	return (
-		<div className="container mx-auto p-6">
-			<Typography variant="h4" gutterBottom align="center">
-				Daftar APAR
-			</Typography>
+		<div className="max-w-5xl mx-auto p-4">
+			<h2 className="text-2xl font-semibold text-center mb-4">Daftar APAR</h2>
 
-			<Button
-				variant="contained"
-				color="primary"
+			<button
 				onClick={() => setOpenAdd(true)}
-				sx={{ marginBottom: 2 }}
+				className="bg-blue-500 text-white px-4 py-2 rounded-md mb-4"
 			>
 				Tambah APAR
-			</Button>
+			</button>
 
 			{isLoading ? (
 				<div className="flex justify-center py-6">
-					<CircularProgress />
+					<div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
 				</div>
 			) : (
-				<TableContainer component={Paper} sx={{ boxShadow: 3, borderRadius: 2, marginTop: 2 }}>
-					<Table>
-						<TableHead>
-							<TableRow sx={{ backgroundColor: "#f5f5f5" }}>
-								<TableCell>No</TableCell>
-								<TableCell>Jenis APAR</TableCell>
-								<TableCell>Nama Pemilik</TableCell>
-								<TableCell>Tanggal Refill</TableCell>
-								<TableCell>Tanggal Expired</TableCell>
-							</TableRow>
-						</TableHead>
-						<TableBody>
+				<div className="overflow-x-auto">
+					<table className="min-w-full border border-gray-200">
+						<thead className="bg-gray-100">
+							<tr>
+								<th className="border px-4 py-2">No</th>
+								<th className="border px-4 py-2">Jenis APAR</th>
+								<th className="border px-4 py-2">Nama Pemilik</th>
+								<th className="border px-4 py-2">Marketing</th>
+								<th className="border px-4 py-2">Tanggal Expired</th>
+							</tr>
+						</thead>
+						<tbody>
 							{paginatedData?.map((apar, index) => (
-								<TableRow key={apar._id} hover>
-									<TableCell>{startIndex + index + 1}</TableCell>
-									<TableCell>{apar.jenis}</TableCell>
-									<TableCell>{apar.nama_pemilik}</TableCell>
-									<TableCell>{new Date(apar.tanggal_refill).toLocaleDateString()}</TableCell>
-									<TableCell>{new Date(apar.tanggal_exp).toLocaleDateString()}</TableCell>
-								</TableRow>
+								<tr key={apar._id} className="hover:bg-gray-50">
+									<td className="border px-4 py-2">{startIndex + index + 1}</td>
+									<td className="border px-4 py-2">{apar.jenis}</td>
+									<td className="border px-4 py-2">{apar.outlet}</td>
+									<td className="border px-4 py-2">{apar.marketing}</td>
+									<td className="border px-4 py-2">{new Date(apar.tanggal_exp).toLocaleDateString()}</td>
+								</tr>
 							))}
-						</TableBody>
-					</Table>
-				</TableContainer>
+						</tbody>
+					</table>
+				</div>
 			)}
 
 			<div className="flex justify-between mt-4">
-				<Button onClick={handlePrevPage} disabled={currentPage === 1}>
-					Previous
-				</Button>
-				<Typography>
-					Page {currentPage} of {totalPages}
-				</Typography>
-				<Button onClick={handleNextPage} disabled={currentPage === totalPages}>
-					Next
-				</Button>
+				<button onClick={handlePrevPage} disabled={currentPage === 1} className="px-4 py-2 bg-gray-300 rounded-md disabled:opacity-50">Previous</button>
+				<span>Page {currentPage} of {totalPages}</span>
+				<button onClick={handleNextPage} disabled={currentPage === totalPages} className="px-4 py-2 bg-gray-300 rounded-md disabled:opacity-50">Next</button>
 			</div>
 
 			{/* Modal Tambah APAR */}
-			<Dialog open={openAdd} onClose={() => setOpenAdd(false)} maxWidth="sm" fullWidth>
-				<DialogTitle>Tambah APAR Baru</DialogTitle>
-				<DialogContent>
-					<TextField fullWidth margin="dense" label="Jenis APAR" name="jenis" value={newApar.jenis} onChange={handleChange} />
-					<TextField fullWidth margin="dense" label="Nama Pemilik" name="nama_pemilik" value={newApar.nama_pemilik} onChange={handleChange} />
-				</DialogContent>
-				<DialogActions>
-					<Button onClick={() => setOpenAdd(false)} color="secondary">Batal</Button>
-					<Button onClick={handleSubmit} color="primary" variant="contained">Simpan</Button>
-				</DialogActions>
-			</Dialog>
+			{openAdd && (
+				<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+					<div className="bg-white p-6 rounded-lg shadow-lg w-96">
+						<h3 className="text-xl font-semibold mb-4">Tambah APAR Baru</h3>
+						<input className="w-full p-2 border rounded mb-2" type="text" name="jenis" placeholder="Jenis APAR" value={newApar.jenis} onChange={handleChange} />
+						<input className="w-full p-2 border rounded mb-2" type="text" name="outlet" placeholder="Outlet" value={newApar.outlet} onChange={handleChange} />
+						<input className="w-full p-2 border rounded mb-2" type="text" name="marketing" placeholder="Marketing" value={newApar.marketing} onChange={handleChange} />
+						<input className="w-full p-2 border rounded mb-2" type="date" name="tanggal_exp" value={newApar.tanggal_exp} onChange={handleChange} />
+						<div className="flex justify-end mt-4">
+							<button onClick={() => setOpenAdd(false)} className="bg-gray-400 px-4 py-2 rounded mr-2">Batal</button>
+							<button onClick={handleSubmit} className="bg-blue-500 text-white px-4 py-2 rounded">Simpan</button>
+						</div>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 };

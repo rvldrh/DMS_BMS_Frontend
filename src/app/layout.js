@@ -16,7 +16,6 @@ export default function RootLayout({
       <body>
         <QueryClientProvider client={queryClient}>
           <div style={{ display: "flex" }}>
-            <Sidebar /> {/* Sidebar is on the left */}
             <main
               style={{
                 marginLeft: "16rem", /* Sidebar width (64rem) */
