@@ -15,13 +15,15 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <QueryClientProvider client={queryClient}>
-          <div style={{ display: "flex" }}>
+          <div 
+          // style={{ display: "flex" }}
+          >
             <main
-              style={{
-                marginLeft: "16rem", /* Sidebar width (64rem) */
-                padding: "20px",
-                width: "100%",
-              }}
+              // style={{
+              //   marginLeft: "16rem", /* Sidebar width (64rem) */
+              //   padding: "20px",
+              //   width: "100%",
+              // }}
             >
               {children} {/* Main content */}
             </main>
