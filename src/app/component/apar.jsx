@@ -6,7 +6,7 @@ import { getApar, addApar } from "@/app/service/apar.service";
 import { toast } from "react-hot-toast";
 import { Moon, Sun } from "lucide-react";
 
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 20;
 
 export const ListAPAR = () => {
 	const queryClient = useQueryClient();
