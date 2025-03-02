@@ -68,7 +68,7 @@ export const AddAPAR = () => {
 					className="w-full p-3 border mb-2 rounded-md"
 				/>
 				<p className="font-bold text-sm mb-4 text-red-500">
-					*Inputkan nama outlet serta alamat outlet 
+					*Inputkan nama outlet serta alamat outlet
 				</p>
 				<p className="text-lg font-bold">Marketing</p>
 				<input
@@ -100,12 +100,12 @@ export const AddAPAR = () => {
 				</div>
 			</div>
 			{showModal && (
-				<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm animate-fadeIn">
-					<div className="bg-white p-10 rounded-lg shadow-2xl w-full max-w-md text-center transform scale-95 transition-all duration-300 ease-in-out">
-						<h2 className="text-2xl font-bold mb-4 text-green-600">
+				<div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-80 backdrop-blur-sm animate-fadeIn">
+					<div className="bg-white p-10 rounded-lg shadow-2xl w-full max-w-md text-center border">
+						<h2 className="text-2xl font-bold mb-4 text-green-700">
 							Berhasil!
 						</h2>
-						<p className="text-gray-700">
+						<p className="text-gray-900">
 							Data APAR telah berhasil ditambahkan.
 						</p>
 						<button

@@ -172,46 +172,48 @@ export const ListAPAR = () => {
 				)}
 			</div>
 			{openAdd && (
-				<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-					<div className="bg-white p-6 rounded-lg shadow-lg w-96">
-						<h2 className="text-xl font-bold mb-4">Tambah APAR</h2>
+				<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+					<div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg w-96 border dark:border-gray-700">
+						<h2 className="text-xl font-bold mb-4 text-black dark:text-white">
+							Tambah APAR
+						</h2>
 						<input
 							type="text"
 							name="jenis"
 							placeholder="Jenis APAR"
 							onChange={handleChange}
-							className="w-full p-2 border mb-2"
+							className="w-full p-2 border rounded-md dark:bg-gray-800 dark:text-white dark:border-gray-600 mb-2"
 						/>
 						<input
 							type="text"
 							name="outlet"
 							placeholder="Nama Pemilik"
 							onChange={handleChange}
-							className="w-full p-2 border mb-2"
+							className="w-full p-2 border rounded-md dark:bg-gray-800 dark:text-white dark:border-gray-600 mb-2"
 						/>
 						<input
 							type="text"
 							name="marketing"
 							placeholder="Marketing"
 							onChange={handleChange}
-							className="w-full p-2 border mb-2"
+							className="w-full p-2 border rounded-md dark:bg-gray-800 dark:text-white dark:border-gray-600 mb-2"
 						/>
 						<input
 							type="date"
 							name="tanggal_exp"
 							onChange={handleChange}
-							className="w-full p-2 border mb-4"
+							className="w-full p-2 border rounded-md dark:bg-gray-800 dark:text-white dark:border-gray-600 mb-4"
 						/>
 						<div className="flex justify-between">
 							<button
 								onClick={() => setOpenAdd(false)}
-								className="bg-gray-500 text-white px-4 py-2 rounded-md"
+								className="bg-gray-500 text-white px-4 py-2 rounded-md dark:bg-gray-700"
 							>
 								Batal
 							</button>
 							<button
 								onClick={handleSubmit}
-								className="bg-blue-500 text-white px-4 py-2 rounded-md"
+								className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 dark:bg-blue-700 dark:hover:bg-blue-600"
 							>
 								Simpan
 							</button>
