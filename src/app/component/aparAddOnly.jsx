@@ -46,66 +46,77 @@ export const AddAPAR = () => {
 	};
 
 	return (
-		<div className="min-h-screen flex items-center justify-center bg-gray-100 p-10">
-			<div className="bg-white p-10 rounded-lg shadow-lg w-full max-w-3xl">
-				<h2 className="text-2xl font-bold mb-6 text-center">Tambah APAR</h2>
-				<p className="text-lg font-bold">Jenis APAR</p>
+		<div className="min-h-screen flex items-center justify-center bg-gray-50 p-10">
+			<div className="bg-white p-10 rounded-lg shadow-lg w-full max-w-3xl border border-gray-300">
+				<h2 className="text-2xl font-bold mb-6 text-center text-gray-900">
+					Tambah APAR
+				</h2>
+
+				<label className="text-lg font-bold text-gray-800">Jenis APAR</label>
 				<input
 					type="text"
 					name="jenis"
-					placeholder=" *Contoh: DCP 3Kg, Co2 3.5kg, Gas cair 2.5kg"
+					placeholder="*Contoh: DCP 3Kg, Co2 3.5kg, Gas cair 2.5kg"
 					value={newApar.jenis}
 					onChange={handleChange}
-					className="w-full p-3 border mb-2 rounded-md"
+					className="w-full p-3 border rounded-md text-gray-900 placeholder-gray-600 bg-gray-100"
 				/>
-				<p className="text-lg font-bold">Outlet</p>
+
+				<label className="text-lg font-bold text-gray-800 mt-4">Outlet</label>
 				<input
 					type="text"
 					name="outlet"
-					placeholder=" *Contoh: RSSA JL. Jaksa Agung Suprapto"
+					placeholder="*Contoh: RSSA JL. Jaksa Agung Suprapto"
 					value={newApar.outlet}
 					onChange={handleChange}
-					className="w-full p-3 border mb-2 rounded-md"
+					className="w-full p-3 border rounded-md text-gray-900 placeholder-gray-600 bg-gray-100"
 				/>
-				<p className="font-bold text-sm mb-4 text-red-500">
+				<p className="font-bold text-sm text-red-600 mt-1">
 					*Inputkan nama outlet serta alamat outlet
 				</p>
-				<p className="text-lg font-bold">Marketing</p>
+
+				<label className="text-lg font-bold text-gray-800 mt-4">
+					Marketing
+				</label>
 				<input
 					type="text"
 					name="marketing"
-					placeholder=" *Siapa penginput data APAR ini"
+					placeholder="*Siapa penginput data APAR ini"
 					value={newApar.marketing}
 					onChange={handleChange}
-					className="w-full p-3 border mb-2 rounded-md"
+					className="w-full p-3 border rounded-md text-gray-900 placeholder-gray-600 bg-gray-100"
 				/>
-				<p className="text-lg font-bold">Tanggal Exp</p>
+
+				<label className="text-lg font-bold text-gray-800 mt-4">
+					Tanggal Exp
+				</label>
 				<input
 					type="date"
 					name="tanggal_exp"
 					value={newApar.tanggal_exp}
 					onChange={handleChange}
-					className="w-full p-3 border mb-1 rounded-md"
+					className="w-full p-3 border rounded-md text-gray-900 bg-gray-100"
 				/>
-				<p className="font-bold text-sm mb-4 text-red-500">
+				<p className="font-bold text-sm text-red-600 mt-1">
 					*Inputkan data tanggal Exp dari APAR yang anda input
 				</p>
-				<div className="flex justify-end">
+
+				<div className="flex justify-end mt-4">
 					<button
 						onClick={handleSubmit}
-						className="bg-blue-500 text-white px-6 py-3 rounded-md"
+						className="bg-blue-500 text-white px-6 py-3 rounded-md hover:bg-blue-600 transition"
 					>
 						Simpan
 					</button>
 				</div>
 			</div>
 			{showModal && (
-				<div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-80 backdrop-blur-sm animate-fadeIn">
-					<div className="bg-white p-10 rounded-lg shadow-2xl w-full max-w-md text-center border">
-						<h2 className="text-2xl font-bold mb-4 text-green-700">
+				<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm animate-fadeIn">
+					<div className="bg-white p-10 rounded-lg shadow-2xl w-full max-w-md text-center transform scale-95 transition-all duration-300 ease-in-out">
+						<h2 className="text-2xl font-bold mb-4 text-green-600">
 							Berhasil!
 						</h2>
-						<p className="text-gray-900">
+						<p className="text-gray-700">
 							Data APAR telah berhasil ditambahkan.
 						</p>
 						<button
