@@ -14,6 +14,7 @@ export const AddAPAR = () => {
 	});
 
 	const [showModal, setShowModal] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
 
 	const addAparMutation = useMutation({
 		mutationFn: async (formData) => await addApar(formData),
@@ -21,9 +22,14 @@ export const AddAPAR = () => {
 			toast.success("APAR berhasil ditambahkan!");
 			setNewApar({ jenis: "", outlet: "", marketing: "", tanggal_exp: "" });
 			setShowModal(true);
+			setIsLoading(false);
+		},
+		onMutate: () => {
+			setIsLoading(true);
 		},
 		onError: () => {
 			toast.error("Gagal menambahkan APAR!");
+			setIsLoading(false);
 		},
 	});
 
@@ -75,9 +81,7 @@ export const AddAPAR = () => {
 					*Inputkan nama outlet serta alamat outlet
 				</p>
 
-				<label className="text-lg font-bold text-gray-800 mt-4">
-					Marketing
-				</label>
+				<label className="text-lg font-bold text-gray-800 mt-4">Marketing</label>
 				<input
 					type="text"
 					name="marketing"
@@ -87,9 +91,7 @@ export const AddAPAR = () => {
 					className="w-full p-3 border rounded-md text-gray-900 placeholder-gray-600 bg-gray-100"
 				/>
 
-				<label className="text-lg font-bold text-gray-800 mt-4">
-					Tanggal Exp
-				</label>
+				<label className="text-lg font-bold text-gray-800 mt-4">Tanggal Exp</label>
 				<input
 					type="date"
 					name="tanggal_exp"
@@ -104,21 +106,22 @@ export const AddAPAR = () => {
 				<div className="flex justify-end mt-4">
 					<button
 						onClick={handleSubmit}
-						className="bg-blue-500 text-white px-6 py-3 rounded-md hover:bg-blue-600 transition"
+						className="bg-blue-500 text-white px-6 py-3 rounded-md hover:bg-blue-600 transition flex items-center"
+						disabled={isLoading}
 					>
+						{isLoading && (
+							<span className="animate-spin border-4 border-white border-t-transparent rounded-full w-5 h-5 mr-2"></span>
+						)}
 						Simpan
 					</button>
 				</div>
 			</div>
+
 			{showModal && (
 				<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm animate-fadeIn">
 					<div className="bg-white p-10 rounded-lg shadow-2xl w-full max-w-md text-center transform scale-95 transition-all duration-300 ease-in-out">
-						<h2 className="text-2xl font-bold mb-4 text-green-600">
-							Berhasil!
-						</h2>
-						<p className="text-gray-700">
-							Data APAR telah berhasil ditambahkan.
-						</p>
+						<h2 className="text-2xl font-bold mb-4 text-green-600">Berhasil!</h2>
+						<p className="text-gray-700">Data APAR telah berhasil ditambahkan.</p>
 						<button
 							onClick={() => setShowModal(false)}
 							className="mt-6 bg-green-500 text-white px-6 py-3 rounded-md hover:bg-green-600 transition"
