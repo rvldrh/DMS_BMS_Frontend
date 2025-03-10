@@ -16,9 +16,10 @@ export const ListAPAR = () => {
 	});
 
 	const [currentPage, setCurrentPage] = useState(1);
-	const totalPages = apars ? Math.ceil(apars.data.length / ITEMS_PER_PAGE) : 1;
 	const [openAdd, setOpenAdd] = useState(false);
 	const [darkMode, setDarkMode] = useState(false);
+	const [selectedMonth, setSelectedMonth] = useState("");
+	const [selectedYear, setSelectedYear] = useState("");
 	const [newApar, setNewApar] = useState({
 		jenis: "",
 		outlet: "",
@@ -78,11 +79,38 @@ export const ListAPAR = () => {
 		}
 	};
 
+	const handleFilterChange = () => {
+		setCurrentPage(1);
+	};
+
 	const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-	const paginatedData = apars?.data?.slice(
+
+	// Filter the apars based on selected month and year
+	const filteredApars = apars?.data?.filter((apar) => {
+		const aparDate = new Date(apar.tanggal_exp);
+		const monthMatches = selectedMonth
+			? aparDate.getMonth() + 1 === parseInt(selectedMonth)
+			: true;
+		const yearMatches = selectedYear
+			? aparDate.getFullYear() === parseInt(selectedYear)
+			: true;
+		return monthMatches && yearMatches;
+	});
+
+	const totalPages = filteredApars
+		? Math.ceil(filteredApars.length / ITEMS_PER_PAGE)
+		: 1;
+	const paginatedData = filteredApars?.slice(
 		startIndex,
 		startIndex + ITEMS_PER_PAGE,
 	);
+
+	// Get unique years from apars data for the year dropdown
+	const uniqueYears = [
+		...new Set(
+			apars?.data?.map((apar) => new Date(apar.tanggal_exp).getFullYear()),
+		),
+	].sort((a, b) => b - a);
 
 	return (
 		<div
@@ -101,6 +129,39 @@ export const ListAPAR = () => {
 							<Moon className="w-6 h-6 text-blue-700" />
 						)}
 					</button>
+				</div>
+
+				<div className="flex gap-4 mb-4">
+					<select
+						className={`${darkMode ? "bg-gray-800 text-white" : "bg-gray-200 text-black"} p-2 rounded-md`}
+						onChange={(e) => {
+							setSelectedMonth(e.target.value);
+							handleFilterChange();
+						}}
+						value={selectedMonth}
+					>
+						<option value="">Semua Bulan</option>
+						{Array.from({ length: 12 }, (_, i) => (
+							<option key={i + 1} value={i + 1}>
+								{new Date(0, i).toLocaleString("id-ID", { month: "long" })}
+							</option>
+						))}
+					</select>
+					<select
+						className={`${darkMode ? "bg-gray-800 text-white" : "bg-gray-200 text-black"} p-2 rounded-md`}
+						onChange={(e) => {
+							setSelectedYear(e.target.value);
+							handleFilterChange();
+						}}
+						value={selectedYear}
+					>
+						<option value="">Semua Tahun</option>
+						{uniqueYears.map((year) => (
+							<option key={year} value={year}>
+								{year}
+							</option>
+						))}
+					</select>
 				</div>
 
 				<button
@@ -173,47 +234,45 @@ export const ListAPAR = () => {
 			</div>
 			{openAdd && (
 				<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-					<div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg w-96 border dark:border-gray-700">
-						<h2 className="text-xl font-bold mb-4 text-black dark:text-white">
-							Tambah APAR
-						</h2>
+					<div className="bg-gray-900 p-6 rounded-lg shadow-lg w-96 border border-gray-700">
+						<h2 className="text-xl font-bold mb-4 text-white">Tambah APAR</h2>
 						<input
 							type="text"
 							name="jenis"
 							placeholder="Jenis APAR"
 							onChange={handleChange}
-							className="w-full p-2 border rounded-md dark:bg-gray-800 dark:text-white dark:border-gray-600 mb-2"
+							className="w-full p-2 border rounded-md bg-gray-800 text-white border-gray-600 mb-2"
 						/>
 						<input
 							type="text"
 							name="outlet"
 							placeholder="Nama Pemilik"
 							onChange={handleChange}
-							className="w-full p-2 border rounded-md dark:bg-gray-800 dark:text-white dark:border-gray-600 mb-2"
+							className="w-full p-2 border rounded-md bg-gray-800 text-white border-gray-600 mb-2"
 						/>
 						<input
 							type="text"
 							name="marketing"
 							placeholder="Marketing"
 							onChange={handleChange}
-							className="w-full p-2 border rounded-md dark:bg-gray-800 dark:text-white dark:border-gray-600 mb-2"
+							className="w-full p-2 border rounded-md bg-gray-800 text-white border-gray-600 mb-2"
 						/>
 						<input
 							type="date"
 							name="tanggal_exp"
 							onChange={handleChange}
-							className="w-full p-2 border rounded-md dark:bg-gray-800 dark:text-white dark:border-gray-600 mb-4"
+							className="w-full p-2 border rounded-md bg-gray-800 text-white border-gray-600 mb-4"
 						/>
 						<div className="flex justify-between">
 							<button
 								onClick={() => setOpenAdd(false)}
-								className="bg-gray-500 text-white px-4 py-2 rounded-md dark:bg-gray-700"
+								className="bg-gray-500 text-white px-4 py-2 rounded-md"
 							>
 								Batal
 							</button>
 							<button
 								onClick={handleSubmit}
-								className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 dark:bg-blue-700 dark:hover:bg-blue-600"
+								className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
 							>
 								Simpan
 							</button>
