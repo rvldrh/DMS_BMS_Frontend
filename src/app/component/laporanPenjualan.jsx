@@ -90,7 +90,7 @@ export const LaporanPenjualanTable = () => {
                         <Button
                           variant="contained"
                           color="primary"
-                          onClick={() => window.location.href = `/pages/invoice/${laporan._id}`}
+                          onClick={() => window.location.href = `/pages/invoiceDMS/invoice/${laporan._id}`}
                         >
                           Lihat Detail
                         </Button>

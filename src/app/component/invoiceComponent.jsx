@@ -1,21 +1,31 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getLaporanPenjualanById } from "../service/laporan_penjualan.service";
 import { formatCurrency, numberToWords } from "../utils";
 import { Spinner } from "./spinner";
 import Image from "next/image";
+import { useReactToPrint } from "react-to-print";
 
 export const InvoiceComponent = ({ invoiceId }) => {
   const Logo = "/img/bms.png";
-
   const [itemsWithDetails, setItemsWithDetails] = useState([]);
 
+  const id = invoiceId?.data?._id;
+
+  // Fetch invoice data using react-query
+  const { data: invoiceData, isLoading, isError } = useQuery({
+    queryKey: ["invoice", invoiceId],
+    queryFn: () => getLaporanPenjualanById(id),
+    enabled: !!invoiceId, // Only run the query if invoiceId is available
+  });
+
+  const invoiceDataa = invoiceData?.data;
 
   useEffect(() => {
-    if (invoiceId?.data?.item) {
-      const itemDetails = invoiceId.data.item.map((item) => ({
+    if (invoiceDataa?.item) {
+      const itemDetails = invoiceDataa.item.map((item) => ({
         ...item,
         satuan: item?._id?.satuan || "Unknown",
         stok_awal: item?._id?.stok_awal || 0,
@@ -25,15 +35,18 @@ export const InvoiceComponent = ({ invoiceId }) => {
 
       setItemsWithDetails(itemDetails);
     }
-  }, [invoiceId?.data]);
+  }, [invoiceDataa]); // Use invoiceDataa as a dependency
 
-  if (laporanLoading) {
+  if (isLoading) {
     return <Spinner />;
   }
 
+  if (isError) {
+    return <div>Error loading invoice data.</div>;
+  }
 
-  const ppnAmount = invoiceId?.data?.subtotal * invoiceId?.data?.ppn;
-  const grandTotal = invoiceId?.data?.subtotal + ppnAmount;
+  const ppnAmount = invoiceDataa?.subtotal * invoiceDataa?.ppn;
+  const grandTotal = invoiceDataa?.subtotal + ppnAmount;
   const grandTotalInWords = numberToWords(grandTotal);
 
   return (
@@ -68,22 +81,22 @@ export const InvoiceComponent = ({ invoiceId }) => {
         {/* Address */}
         <div className="mb-4">
           <p className="font-bold">Kepada Yth:</p>
-          <p>{invoiceId?.data?.kepada || "Data tidak tersedia"}</p>
+          <p>{invoiceDataa?.kepada || "Data tidak tersedia"}</p>
         </div>
 
         {/* Invoice Info */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
           <div>
             <p className="font-bold">NO.INVOICE</p>
-            <p>{invoiceId?.data?.no_invoice || "-"}</p>
+            <p>{invoiceDataa?.no_invoice || "-"}</p>
           </div>
           <div>
             <p className="font-bold">TANGGAL</p>
-            <p>{invoiceId?.data?.tanggal || "-"}</p>
+            <p>{invoiceDataa?.tanggal || "-"}</p>
           </div>
           <div>
             <p className="font-bold">TGL. JATUH TEMPO</p>
-            <p>{invoiceId?.data?.tgl_jatuhTempo || "-"}</p>
+            <p>{invoiceDataa?.tgl_jatuhTempo || "-"}</p>
           </div>
         </div>
 
@@ -122,10 +135,10 @@ export const InvoiceComponent = ({ invoiceId }) => {
           <div className="w-full sm:w-1/2">
             <div className="flex justify-between mb-2">
               <span>Subtotal:</span>
-              <span>Rp {formatCurrency(invoiceId.data.subtotal)}</span>
+              <span>Rp {formatCurrency(invoiceDataa.subtotal)}</span>
             </div>
             <div className="flex justify-between mb-2">
-              <span>PPN {invoiceId.data.ppn * 100}%:</span>
+              <span>PPN {invoiceDataa.ppn * 100}%:</span>
               <span>Rp {formatCurrency(ppnAmount)}</span>
             </div>
             <div className="flex justify-between font-bold">
