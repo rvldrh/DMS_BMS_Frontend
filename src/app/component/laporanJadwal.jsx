@@ -367,7 +367,7 @@ export const LaporanJadwal = () => {
 							>
 								<X />
 							</button>
-							<h2 className="text-2xl font-semibold mb-4">
+							<h2 className="text-2xl font-semibold mb-4 text-black dark:text-white">
 								{isEditMode ? "Edit Laporan" : "Tambah Laporan"}
 							</h2>
 							<div className="space-y-3">
@@ -398,14 +398,21 @@ export const LaporanJadwal = () => {
 									}
 									className="w-full px-3 py-2 border rounded dark:bg-gray-800 dark:text-white"
 								/>
-								<input
-									type="date"
-									value={newData.tanggal || ""}
-									onChange={(e) =>
-										setNewData({ ...newData, tanggal: e.target.value })
-									}
-									className="w-full px-3 py-2 border rounded dark:bg-gray-800 dark:text-white"
-								/>
+
+								<div className="flex flex-col space-y-1">
+									<label className="text-sm text-gray-600 dark:text-gray-300">
+										Tanggal
+									</label>
+									<input
+										type="date"
+										value={newData.tanggal || ""}
+										onChange={(e) =>
+											setNewData({ ...newData, tanggal: e.target.value })
+										}
+										className="w-full px-3 py-2 border rounded dark:bg-gray-800 dark:text-white"
+									/>
+								</div>
+
 								<button
 									onClick={handleSave}
 									className="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
