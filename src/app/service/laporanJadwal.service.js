@@ -1,7 +1,7 @@
 import axios from "axios";
 import { API_URL, headers } from "../utils"; // pastikan `API_URL` diakhiri dengan slash `/`
 
-const BASE_URL = 'http://localhost:8008/api/laporan_jadwal';
+const BASE_URL = 'https://backend-dms-lyart.vercel.app/api/laporan_jadwal';
 
 // ✅ Ambil semua laporan
 export const getAllLaporan = async () => {
