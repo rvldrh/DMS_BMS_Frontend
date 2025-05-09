@@ -1,4 +1,4 @@
-import { ListAPAR } from '@/component/apar'
+import { ListAPAR } from '@/app/component/apar'
 import React from 'react'
 
 const page = () => {

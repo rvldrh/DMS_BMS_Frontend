@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { getLaporanPenjualanById } from "../service/laporan_penjualan.service";
+import { getLaporanPenjualanById } from "@/app/service/laporan_penjualan.service";
 import { formatCurrency, numberToWords } from "../utils";
 import { Spinner } from "./spinner";
 import Image from "next/image";

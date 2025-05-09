@@ -1,4 +1,4 @@
-import { BarangKeluarTable } from '@/component/barangKeluar'
+import { BarangKeluarTable } from '@/app/component/barangKeluar'
 import React from 'react'
 
 const page = () => {

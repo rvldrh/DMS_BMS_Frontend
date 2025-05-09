@@ -7,7 +7,7 @@ import {
 	addKatalogBarang,
 	updateKatalogBarang,
 	deleteKatalogBarang,
-} from "../service/katalog_barang.service";
+} from "@/app/service/katalog_barang.service";
 import { Spinner } from "./spinner";
 
 export const KatalogBarangList = () => {

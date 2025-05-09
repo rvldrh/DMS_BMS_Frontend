@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { addApar } from "@/service/apar.service";
+import { addApar } from "@/app/service/apar.service";
 import { toast } from "react-hot-toast";
 
 export const AddAPAR = () => {
