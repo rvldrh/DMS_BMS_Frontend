@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "baseUrl": "src",  // Menunjukkan bahwa src adalah basePath
+    "baseUrl": "src",  // BasePath diatur ke src
     "paths": {
-      "@/*": ["app/*"]
+      "@/*": ["app/*"]  // Path alias @ diatur ke folder app
     }
   }
 }

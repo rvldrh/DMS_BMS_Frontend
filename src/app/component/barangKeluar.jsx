@@ -5,9 +5,9 @@ import { useState, useEffect } from "react";
 import {
 	getBarangKeluar,
 	addBarangKeluar,
-} from "../service/barang_keluar.service";
+} from "@/service/barang_keluar.service";
 import { Spinner } from "./spinner";
-import { fetchKatalogBarang } from "../service/katalog_barang.service";
+import { fetchKatalogBarang } from "@/service/katalog_barang.service"; 
 
 export const BarangKeluarTable = () => {
 	const [barangKeluar, setBarangKeluar] = useState([]);

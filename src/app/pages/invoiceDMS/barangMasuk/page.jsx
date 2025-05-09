@@ -1,5 +1,5 @@
 
-import { BarangMasukTable } from '@/app/component/barangMasuk'
+import { BarangMasukTable } from '@/component/barangMasuk'
 import React from 'react'
 
 const page = () => {

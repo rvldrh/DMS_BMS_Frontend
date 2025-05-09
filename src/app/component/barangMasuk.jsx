@@ -5,8 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import {
 	getBarangMasuk,
 	addBarangMasuk,
-} from "@/app/service/barang_masuk.service";
-import { fetchKatalogBarang } from "@/app/service/katalog_barang.service";
+} from "@/service/barang_masuk.service";
+import { fetchKatalogBarang } from "@/service/katalog_barang.service";
 import { Spinner } from "./spinner";
 
 export const BarangMasukTable = () => {
