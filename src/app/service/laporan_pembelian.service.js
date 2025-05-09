@@ -10,7 +10,7 @@ export const getLaporanPembelian = async () => {
         withCredentials: true
        }
     );
-    return response.data;
+    return response.data.data;
   } catch (error) {
     console.error("Error fetching laporan pembelian:", error);
     throw error;

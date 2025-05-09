@@ -1,334 +1,242 @@
-'use client'
+"use client";
 
 import React, { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import {
-  Button,
-  Modal,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TextField,
-  Grid,
-  Box,
-  Typography,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle
-} from "@mui/material";
-import { fetchKatalogBarang, addKatalogBarang, updateKatalogBarang, deleteKatalogBarang } from "../service/katalog_barang.service";
+	fetchKatalogBarang,
+	addKatalogBarang,
+	updateKatalogBarang,
+	deleteKatalogBarang,
+} from "../service/katalog_barang.service";
 import { Spinner } from "./spinner";
 
 export const KatalogBarangList = () => {
-  const [openModal, setOpenModal] = useState(false);
-  const [selectedId, setSelectedId] = useState(null);
-  const [kodeBarang, setKodeBarang] = useState("");
-  const [namaBarang, setNamaBarang] = useState("");
-  const [satuan, setSatuan] = useState("");
-  const [harga, setHarga] = useState("");
-  const [stokAwal, setStokAwal] = useState("");
+	const [openModal, setOpenModal] = useState(false);
+	const [selectedId, setSelectedId] = useState(null);
+	const [kodeBarang, setKodeBarang] = useState("");
+	const [namaBarang, setNamaBarang] = useState("");
+	const [satuan, setSatuan] = useState("");
+	const [harga, setHarga] = useState("");
+	const [stokAwal, setStokAwal] = useState("");
+	const [searchTerm, setSearchTerm] = useState("");
 
-  const [errorMessage, setErrorMessage] = useState(null);
+	const {
+		data: katalogBarangData,
+		error: katalogBarangError,
+		isLoading: katalogBarangLoading,
+	} = useQuery({
+		queryKey: ["katalogBarang"],
+		queryFn: fetchKatalogBarang,
+		refetchInterval: 3000,
+	});
 
-  // State untuk konfirmasi delete
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [deleteId, setDeleteId] = useState(null);
+	const { mutateAsync: addBarang } = useMutation({
+		mutationFn: addKatalogBarang,
+		onSuccess: () => handleCloseModal(),
+	});
 
-  const {
-    data: katalogBarangData,
-    error: katalogBarangError,
-    isLoading: katalogBarangLoading
-  } = useQuery({
-    queryKey: ["katalogBarang"],
-    queryFn: fetchKatalogBarang,
-    refetchInterval: 3000
-  });
+	const { mutateAsync: updateBarang } = useMutation({
+		mutationFn: (data) => updateKatalogBarang(data.id, data.data),
+		onSuccess: () => handleCloseModal(),
+	});
 
-  const { mutateAsync: addBarang, isPending: isAdding } = useMutation(
-    {
-      mutationFn: addKatalogBarang,
+	const { mutateAsync: deleteBarang } = useMutation({
+		mutationFn: deleteKatalogBarang,
+	});
 
-      onError: (error) => {
-        console.error("Error adding Katalog Barang:", error.message);
-        setErrorMessage(error.response?.data?.message || error.message);
-      },
+	const handleOpenModal = (barang) => {
+		setSelectedId(barang?._id || null);
+		setKodeBarang(barang?.kode_barang || "");
+		setNamaBarang(barang?.nama_barang || "");
+		setSatuan(barang?.satuan || "");
+		setHarga(barang?.harga || "");
+		setStokAwal(barang?.stok_awal || "");
+		setOpenModal(true);
+	};
 
-      onSuccess: () => {
-        handleCloseModal();
-        setErrorMessage(null);
-      },
-    }
-  );
+	const handleCloseModal = () => {
+		setOpenModal(false);
+		setSelectedId(null);
+		setKodeBarang("");
+		setNamaBarang("");
+		setSatuan("");
+		setHarga("");
+		setStokAwal("");
+	};
 
-  const { mutateAsync: updateBarang, isPending: isUpdating } = useMutation(
-    {
-      mutationFn: (data) => updateKatalogBarang(data.id, data.data),
+	const handleSubmit = async (event) => {
+		event.preventDefault();
+		const barangData = {
+			kode_barang: kodeBarang,
+			nama_barang: namaBarang,
+			satuan,
+			harga: Number(harga),
+			stok_awal: Number(stokAwal),
+		};
+		if (selectedId) {
+			await updateBarang({ id: selectedId, data: barangData });
+		} else {
+			await addBarang(barangData);
+		}
+	};
 
-      onError: (error) => {
-        console.error("Error updating Katalog Barang:", error.message);
-        setErrorMessage(error.response?.data?.message || error.message);
-      },
+	const handleDelete = async (id) => {
+		await deleteBarang(id);
+	};
 
-      onSuccess: () => {
-        handleCloseModal();
-        setErrorMessage(null);
-      },
-    }
-  );
+	const filteredData = katalogBarangData?.data?.filter(
+		(item) =>
+			item.nama_barang.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			item.kode_barang.toLowerCase().includes(searchTerm.toLowerCase()),
+	);
 
-  const { mutateAsync: deleteBarang } = useMutation(
-    {
-      mutationFn: deleteKatalogBarang,
+	if (katalogBarangLoading) return <Spinner />;
+	if (katalogBarangError instanceof Error)
+		return (
+			<div className="text-red-500">Error: {katalogBarangError.message}</div>
+		);
 
-      onError: (error) => {
-        console.error("Error deleting Katalog Barang:", error.message);
-        setErrorMessage(error.response?.data?.message || error.message);
-      },
+	return (
+		<div className="relative p-4">
+			<div className="flex flex-wrap justify-between items-center mb-4 gap-2 ">
+				<div className="flex flex-col w-full sm:w-[200px]" >
+					<h3 className="font-medium text-xs mb-1">
+						Search by Nama / Kode Barang
+					</h3>
+					<input
+						type="text"
+						className="border px-3 py-2 rounded w-64"
+						placeholder="Cari kode/nama barang"
+						value={searchTerm}
+						onChange={(e) => setSearchTerm(e.target.value)}
+					/>
+				</div>
+				<button
+					className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+					onClick={() => handleOpenModal()}
+				>
+					Tambah Katalog Barang
+				</button>
+			</div>
 
-      onSuccess: () => {
-        setErrorMessage(null);
-      },
-    }
-  );
+			<div className="overflow-x-auto">
+				<table className="min-w-full border text-sm">
+					<thead className="bg-gray-100">
+						<tr>
+							<th className="border px-3 py-2">No</th>
+							<th className="border px-3 py-2">Kode Barang</th>
+							<th className="border px-3 py-2">Nama Barang</th>
+							<th className="border px-3 py-2">Satuan</th>
+							<th className="border px-3 py-2">Harga</th>
+							<th className="border px-3 py-2">Stok Awal</th>
+							<th className="border px-3 py-2">Masuk</th>
+							<th className="border px-3 py-2">Keluar</th>
+							<th className="border px-3 py-2">Stok Akhir</th>
+							<th className="border px-3 py-2">Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						{filteredData?.map((item, index) => (
+							<tr key={item._id} className="odd:bg-white even:bg-gray-50">
+								<td className="border px-3 py-2 text-center">{index + 1}</td>
+								<td className="border px-3 py-2">{item.kode_barang}</td>
+								<td className="border px-3 py-2">{item.nama_barang}</td>
+								<td className="border px-3 py-2">{item.satuan}</td>
+								<td className="border px-3 py-2">
+									{item.harga.toLocaleString("id-ID")}
+								</td>
+								<td className="border px-3 py-2">{item.stok_awal}</td>
+								<td className="border px-3 py-2">{item.masuk}</td>
+								<td className="border px-3 py-2">{item.keluar}</td>
+								<td className="border px-3 py-2">
+									{item.stok_awal + item.masuk - item.keluar}
+								</td>
+								<td className="border px-3 py-2 space-x-2">
+									<button
+										onClick={() => handleOpenModal(item)}
+										className="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+									>
+										Edit
+									</button>
+									<button
+										onClick={() => handleDelete(item._id)}
+										className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+									>
+										Hapus
+									</button>
+								</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
 
-  const handleOpenModal = (barang) => {
-    setSelectedId(barang?._id || null);
-    setKodeBarang(barang?.kode_barang || "");
-    setNamaBarang(barang?.nama_barang || "");
-    setSatuan(barang?.satuan || "");
-    setHarga(barang?.harga || "");
-    setStokAwal(barang?.stok_awal || "");
-    setOpenModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setOpenModal(false);
-    setSelectedId(null);
-    setKodeBarang("");
-    setNamaBarang("");
-    setSatuan("");
-    setHarga("");
-    setStokAwal("");
-    setErrorMessage(null);
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    const barangData = {
-      kode_barang: kodeBarang,
-      nama_barang: namaBarang,
-      satuan,
-      harga: Number(harga),
-      stok_awal: Number(stokAwal),
-    };
-
-    if (selectedId) {
-      await updateBarang({ id: selectedId, data: barangData });
-    } else {
-      await addBarang(barangData);
-    }
-  };
-
-  const handleOpenDeleteDialog = (id) => {
-    setDeleteId(id);
-    setOpenDeleteDialog(true);
-  };
-
-  const handleCloseDeleteDialog = () => {
-    setDeleteId(null);
-    setOpenDeleteDialog(false);
-  };
-
-  const handleConfirmDelete = async () => {
-    if (deleteId) {
-      await deleteBarang(deleteId);
-      handleCloseDeleteDialog();
-    }
-  };
-
-  if (katalogBarangLoading) {
-    return <Spinner />;
-  }
-
-  if (katalogBarangError instanceof Error) {
-    return <div>Error: {katalogBarangError.message}</div>;
-  }
-
-  return (
-    <div>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>No</TableCell>
-              <TableCell>Kode Barang</TableCell>
-              <TableCell>Nama Barang</TableCell>
-              <TableCell>Satuan</TableCell>
-              <TableCell>Harga</TableCell>
-              <TableCell>Stok Awal</TableCell>
-              <TableCell>Masuk</TableCell>
-              <TableCell>Keluar</TableCell>
-              <TableCell>Stok Akhir</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {katalogBarangData?.data?.map((item, index) => (
-              <TableRow key={item._id}>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>{item.kode_barang}</TableCell>
-                <TableCell>{item.nama_barang}</TableCell>
-                <TableCell>{item.satuan}</TableCell>
-                <TableCell>{item.harga}</TableCell>
-                <TableCell>{item.stok_awal}</TableCell>
-                <TableCell>{item.masuk}</TableCell>
-                <TableCell>{item.keluar}</TableCell>
-                <TableCell>{item.stok_akhir}</TableCell>
-                <TableCell>
-                  <Button variant="outlined" color="primary" onClick={() => handleOpenModal(item)}>
-                    Edit
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    color="secondary"
-                    onClick={() => handleOpenDeleteDialog(item._id)}
-                    style={{ marginLeft: "10px" }}
-                  >
-                    Delete
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-
-      <Box mt={2}>
-        <Button variant="contained" color="primary" onClick={() => handleOpenModal()}>
-          Tambah Katalog Barang
-        </Button>
-      </Box>
-
-      {/* Dialog Konfirmasi Hapus */}
-      <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
-        <DialogTitle>Konfirmasi Hapus</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Apakah Anda yakin ingin menghapus barang ini? Tindakan ini tidak dapat dibatalkan.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDeleteDialog} color="secondary">
-            Batal
-          </Button>
-          <Button onClick={handleConfirmDelete} color="primary" autoFocus>
-            Hapus
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Modal open={openModal} onClose={handleCloseModal}>
-        <Box
-          sx={{
-            padding: "20px",
-            backgroundColor: "white",
-            borderRadius: "8px",
-            maxWidth: "600px",
-            margin: "100px auto",
-            boxShadow: 24,
-          }}
-        >
-          <Typography variant="h6" gutterBottom>
-            {selectedId ? "Edit Katalog Barang" : "Tambah Katalog Barang"}
-          </Typography>
-          {errorMessage && (
-            <Typography color="error" gutterBottom>
-              {errorMessage}
-            </Typography>
-          )}
-          <form onSubmit={handleSubmit}>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Kode Barang"
-                  variant="outlined"
-                  value={kodeBarang}
-                  onChange={(e) => setKodeBarang(e.target.value)}
-                  required
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Nama Barang"
-                  variant="outlined"
-                  value={namaBarang}
-                  onChange={(e) => setNamaBarang(e.target.value)}
-                  required
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Satuan"
-                  variant="outlined"
-                  value={satuan}
-                  onChange={(e) => setSatuan(e.target.value)}
-                  required
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Harga"
-                  variant="outlined"
-                  type="number"
-                  value={harga}
-                  onChange={(e) => setHarga(e.target.value)}
-                  required
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Stok Awal"
-                  variant="outlined"
-                  type="number"
-                  value={stokAwal}
-                  onChange={(e) => setStokAwal(e.target.value)}
-                  required
-                />
-              </Grid>
-              <Grid item xs={12} sx={{ textAlign: "right" }}>
-                <Button
-                  variant="outlined"
-                  color="secondary"
-                  onClick={handleCloseModal}
-                  style={{ marginRight: "10px" }}
-                >
-                  Batal
-                </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  type="submit"
-                  disabled={isAdding || isUpdating}
-                >
-                  Simpan
-                </Button>
-              </Grid>
-            </Grid>
-          </form>
-        </Box>
-      </Modal>
-    </div>
-  );
+			{openModal && (
+				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+					<div className="bg-white rounded shadow-lg w-full max-w-lg p-6">
+						<h2 className="text-xl font-bold mb-4">
+							{selectedId ? "Edit" : "Tambah"} Katalog Barang
+						</h2>
+						<form onSubmit={handleSubmit} className="space-y-4">
+							<input
+								type="text"
+								className="w-full border px-3 py-2 rounded"
+								placeholder="Kode Barang"
+								value={kodeBarang}
+								onChange={(e) => setKodeBarang(e.target.value)}
+								required
+							/>
+							<input
+								type="text"
+								className="w-full border px-3 py-2 rounded"
+								placeholder="Nama Barang"
+								value={namaBarang}
+								onChange={(e) => setNamaBarang(e.target.value)}
+								required
+							/>
+							<input
+								type="text"
+								className="w-full border px-3 py-2 rounded"
+								placeholder="Satuan"
+								value={satuan}
+								onChange={(e) => setSatuan(e.target.value)}
+								required
+							/>
+							<input
+								type="number"
+								className="w-full border px-3 py-2 rounded"
+								placeholder="Harga"
+								value={harga}
+								onChange={(e) => setHarga(e.target.value)}
+								required
+							/>
+							<input
+								type="number"
+								className="w-full border px-3 py-2 rounded"
+								placeholder="Stok Awal"
+								value={stokAwal}
+								onChange={(e) => setStokAwal(e.target.value)}
+								required
+							/>
+							<div className="flex justify-end space-x-2">
+								<button
+									type="button"
+									onClick={handleCloseModal}
+									className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+								>
+									Batal
+								</button>
+								<button
+									type="submit"
+									className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+								>
+									Simpan
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			)}
+		</div>
+	);
 };

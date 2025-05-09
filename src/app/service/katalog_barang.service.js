@@ -59,7 +59,7 @@ export const updateKatalogBarang = async (id, data) => {
   }
 
   try {
-    const response = await axios.put<KatalogBarang>(`${API_URL}katalog_barang/${id}`, data, {
+    const response = await axios.put(`${API_URL}katalog_barang/${id}`, data, {
       headers: headers,
       withCredentials: true,
     });

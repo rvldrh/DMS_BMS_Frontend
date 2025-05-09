@@ -12,7 +12,6 @@ const InvoicePage = async ({ params }) => {
 
   return (
     <>
-      <h1>Invoice Details</h1>
       {/* Pass the invoice data to InvoiceComponent */}
       <InvoiceComponent invoiceId={invoiceData} />
     </>
