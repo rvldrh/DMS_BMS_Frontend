@@ -1,4 +1,4 @@
-import { AddAPAR } from '@/app/component/aparAddOnly'
+import { AddAPAR } from '@/component/aparAddOnly'
 import React from 'react'
 
 const page = () => {

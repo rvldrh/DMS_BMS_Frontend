@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": "src",  // Menunjukkan bahwa src adalah basePath
     "paths": {
-      "@/*": ["src/app/*"]
+      "@/*": ["app/*"]
     }
   }
 }
