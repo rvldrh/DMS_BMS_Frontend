@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
 	getLaporanPenjualan,
 	addLaporanPenjualan,
@@ -9,13 +9,15 @@ import {
 import { fetchKatalogBarang } from "../service/katalog_barang.service";
 import { Spinner } from "./spinner";
 import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"; // Import toast styles
+import "react-toastify/dist/ReactToastify.css";
 
 export const LaporanPenjualanTable = () => {
+	const queryClient = useQueryClient();
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(5);
 	const [showModal, setShowModal] = useState(false);
 	const [filterMonth, setFilterMonth] = useState("");
+	const [formLoading, setFormLoading] = useState(false);
 	const [searchKepada, setSearchKepada] = useState("");
 
 	const { data: katalogData, isLoading: loadingKatalog } = useQuery({
@@ -27,7 +29,6 @@ export const LaporanPenjualanTable = () => {
 		data: laporanData,
 		isLoading,
 		error,
-		refetch,
 	} = useQuery({
 		queryKey: ["laporanPenjualan"],
 		queryFn: getLaporanPenjualan,
@@ -41,6 +42,69 @@ export const LaporanPenjualanTable = () => {
 		ppn: 0,
 		kepada: "",
 		basicOutlet: "",
+	});
+
+	const mutation = useMutation({
+		mutationFn: async (formData) => {
+			const validItems = formData.item.filter(
+				(item) => item._id && item.qty > 0,
+			);
+			if (validItems.length === 0) {
+				throw new Error("Harap masukkan item yang valid.");
+			}
+
+			let subtotal = 0;
+			const updatedItems = validItems.map((item) => {
+				const barang = katalogData?.data?.find((b) => b._id === item._id);
+				if (!barang) {
+					throw new Error(`Barang dengan ID ${item._id} tidak ditemukan.`);
+				}
+
+				if (item.qty > barang.stok_akhir) {
+					throw new Error("Stok barang tidak mencukupi.");
+				}
+
+				const jumlah = barang.harga * item.qty;
+				subtotal += jumlah;
+
+				return { _id: item._id, qty: item.qty, jumlah };
+			});
+
+			const ppnFloat = parseFloat(formData.ppn);
+			const ppnValue = subtotal * ppnFloat;
+			const grand_total = subtotal + ppnValue;
+
+			const finalData = {
+				...formData,
+				item: updatedItems,
+				ppn: ppnFloat,
+				subtotal,
+				grand_total,
+			};
+
+			return await addLaporanPenjualan(finalData);
+		},
+		onSuccess: () => {
+			toast.success("Laporan penjualan berhasil ditambahkan!");
+			setShowModal(false);
+			setFormData({
+				tanggal: "",
+				no_invoice: "",
+				tgl_jatuhTempo: "",
+				item: [{ _id: "", qty: 0 }],
+				ppn: 0,
+				kepada: "",
+				basicOutlet: "",
+			});
+			queryClient.invalidateQueries(["laporanPenjualan"]);
+      setFormLoading(false);
+      setShowModal(false)
+		},
+		onError: (error) => {
+      console.error("Mutation error:", error.message);
+      setFormLoading(false);
+			toast.error(error.message);
+		},
 	});
 
 	const handleInputChange = (event) => {
@@ -67,61 +131,10 @@ export const LaporanPenjualanTable = () => {
 		setFormData((prev) => ({ ...prev, item: updatedItems }));
 	};
 
-	const handleSubmit = async (event) => {
+	const handleSubmit = (event) => {
 		event.preventDefault();
-
-		const validItems = formData.item.filter((item) => item._id && item.qty > 0);
-		if (validItems.length === 0) {
-			toast.error(error.message);
-			return;
-		}
-
-		try {
-			let subtotal = 0;
-			const updatedItems = validItems.map((item) => {
-				const barang = katalogData?.data?.find((b) => b._id === item._id);
-				if (!barang)
-					toast.error(`Barang dengan ID ${item._id} tidak ditemukan.`);
-
-
-				// 💥 Validasi stok cukup
-				if (item.qty > barang.stok_akhir) {
-					toast.error("Stok Barang Tdak Mencukupi");
-				}
-
-				const jumlah = barang.harga * item.qty;
-				subtotal += jumlah;
-
-				return { _id: item._id, qty: item.qty, jumlah };
-			});
-
-			const ppnFloat = parseFloat(formData.ppn);
-			const ppnValue = subtotal * ppnFloat;
-			const grand_total = subtotal + ppnValue;
-
-			const finalData = {
-				...formData,
-				item: updatedItems,
-				ppn: ppnFloat,
-				subtotal,
-				grand_total,
-			};
-
-			await addLaporanPenjualan(finalData);
-			setShowModal(false);
-			setFormData({
-				tanggal: "",
-				no_invoice: "",
-				tgl_jatuhTempo: "",
-				item: [{ _id: "", qty: 0 }],
-				ppn: 0,
-				kepada: "",
-				basicOutlet: "",
-			});
-			refetch(); // refresh data
-		} catch (error) {
-			toast.error(error.message);
-		}
+    setFormLoading(true);
+		mutation.mutate(formData);
 	};
 
 	const handleChangePage = (newPage) => {
@@ -160,7 +173,6 @@ export const LaporanPenjualanTable = () => {
 				<div className="text-red-500">Gagal memuat data laporan.</div>
 			) : (
 				<>
-					{/* Filter & Button */}
 					<ToastContainer />
 					<div className="flex justify-between items-center mb-4 p-6">
 						<div className="flex gap-4">
@@ -189,14 +201,13 @@ export const LaporanPenjualanTable = () => {
 							</div>
 						</div>
 						<button
-							className="bg-blue-500 text-white px-4 py-2 rounded-md"
+							className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
 							onClick={() => setShowModal(true)}
 						>
 							Add Laporan Penjualan
 						</button>
 					</div>
 
-					{/* Table */}
 					<table className="min-w-full table-auto bg-white shadow rounded">
 						<thead className="bg-gray-100">
 							<tr>
@@ -228,7 +239,7 @@ export const LaporanPenjualanTable = () => {
 									<td className="px-4 py-2 text-center">{laporan.kepada}</td>
 									<td className="px-4 py-2 text-center">
 										<button
-											className="bg-blue-500 text-white px-3 py-1 rounded"
+											className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
 											onClick={() =>
 												(window.location.href = `/pages/invoiceDMS/invoice/${laporan._id}`)
 											}
@@ -241,7 +252,6 @@ export const LaporanPenjualanTable = () => {
 						</tbody>
 					</table>
 
-					{/* Pagination */}
 					<div className="flex justify-between items-center mt-4 px-6">
 						<div>
 							Rows per page:
@@ -259,7 +269,7 @@ export const LaporanPenjualanTable = () => {
 							<button
 								disabled={page === 0}
 								onClick={() => handleChangePage(page - 1)}
-								className="px-3 py-1 border border-gray-300 rounded disabled:opacity-50"
+								className="px-3 py-1 border border-gray-300 rounded disabled:opacity-50 hover:bg-gray-200"
 							>
 								Previous
 							</button>
@@ -269,53 +279,55 @@ export const LaporanPenjualanTable = () => {
 							<button
 								disabled={page + 1 >= totalPages}
 								onClick={() => handleChangePage(page + 1)}
-								className="px-3 py-1 border border-gray-300 rounded disabled:opacity-50"
+								className="px-3 py-1 border border-gray-300 rounded disabled:opacity-50 hover:bg-gray-200"
 							>
 								Next
 							</button>
 						</div>
 					</div>
 
-					{/* Modal */}
 					{showModal && (
-						<div
-							className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 ${showModal ? "block" : "hidden"}`}
-						>
-							<div className="bg-white p-6 rounded-lg w-96">
+						<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+							<div className="bg-white p-6 rounded-lg w-full max-w-md sm:max-w-lg max-h-[80vh] overflow-y-auto">
 								<h2 className="text-xl font-semibold mb-4">
 									Tambah Laporan Penjualan
 								</h2>
 								<form onSubmit={handleSubmit}>
 									<div className="space-y-4">
-										<div className="box items-end gap-0">
-											<h3 className="font-medium text-red-500 whitespace-nowrap">
+										<div className="flex flex-col">
+											<label className="font-medium text-red-500 mb-1">
 												*Tanggal
-											</h3>
+											</label>
 											<input
 												type="date"
-												className="w-full border border-gray-300 p-2 rounded-md"
+												className="border border-gray-300 p-2 rounded-md"
 												name="tanggal"
 												value={formData.tanggal}
 												onChange={handleInputChange}
 												required
 											/>
 										</div>
-										<input
-											type="text"
-											className="w-full border border-gray-300 p-2 rounded-md"
-											placeholder="No. Invoice"
-											name="no_invoice"
-											value={formData.no_invoice}
-											onChange={handleInputChange}
-											required
-										/>
-										<div className="box items-end gap-0">
-											<h3 className="font-medium text-red-500 whitespace-nowrap">
+										<div className="flex flex-col">
+											<label className="font-medium text-red-500 mb-1">
+												*No. Invoice
+											</label>
+											<input
+												type="text"
+												className="border border-gray-300 p-2 rounded-md"
+												placeholder="No. Invoice"
+												name="no_invoice"
+												value={formData.no_invoice}
+												onChange={handleInputChange}
+												required
+											/>
+										</div>
+										<div className="flex flex-col">
+											<label className="font-medium text-red-500 mb-1">
 												*Tanggal Jatuh Tempo
-											</h3>
+											</label>
 											<input
 												type="date"
-												className="w-full border border-gray-300 p-2 rounded-md"
+												className="border border-gray-300 p-2 rounded-md"
 												name="tgl_jatuhTempo"
 												value={formData.tgl_jatuhTempo}
 												onChange={handleInputChange}
@@ -326,7 +338,10 @@ export const LaporanPenjualanTable = () => {
 										<div className="space-y-4">
 											<h3 className="font-medium">Item</h3>
 											{formData.item.map((item, index) => (
-												<div className="flex space-x-4" key={index}>
+												<div
+													className="flex space-x-4 items-center"
+													key={index}
+												>
 													<select
 														className="w-1/2 border border-gray-300 p-2 rounded-md"
 														name={`item-${index}-id`}
@@ -337,7 +352,7 @@ export const LaporanPenjualanTable = () => {
 														required
 													>
 														<option value="">Pilih Barang</option>
-														{katalogData.data?.map((barang) => (
+														{katalogData?.data?.map((barang) => (
 															<option key={barang?._id} value={barang?._id}>
 																{barang?.nama_barang}
 															</option>
@@ -356,10 +371,11 @@ export const LaporanPenjualanTable = () => {
 															)
 														}
 														required
+														min="1"
 													/>
 													<button
 														type="button"
-														className="text-red-500"
+														className="text-red-500 hover:text-red-700"
 														onClick={() => handleRemoveItem(index)}
 													>
 														Hapus
@@ -368,37 +384,41 @@ export const LaporanPenjualanTable = () => {
 											))}
 											<button
 												type="button"
-												className="mt-2 text-blue-500"
+												className="mt-2 text-blue-500 hover:text-blue-700"
 												onClick={handleAddItem}
 											>
 												Tambah Item
 											</button>
 										</div>
-										<div className="box items-end gap-1">
-											<h3 className="font-medium text-red-500 whitespace-nowrap">
-												*PPN (0-1) contoh: 0,1
-											</h3>
+
+										<div className="flex flex-col">
+											<label className="font-medium text-red-500 mb-1">
+												*PPN (0-1) contoh: 0.1
+											</label>
 											<input
 												type="number"
-												className="w-full border border-gray-300 p-2 rounded-md placeholder-shown:italic"
+												className="border border-gray-300 p-2 rounded-md placeholder-shown:italic"
 												placeholder="0.1"
 												name="ppn"
 												value={formData.ppn}
 												onChange={(e) =>
 													setFormData((prev) => ({
 														...prev,
-														ppn: parseFloat(e.target.value),
+														ppn: parseFloat(e.target.value) || 0,
 													}))
 												}
+												step="0.01"
+												min="0"
+												max="1"
 												required
 											/>
 										</div>
-										<div className="box items-end gap-1">
-											<h3 className="font-medium text-red-500 whitespace-nowrap">
+										<div className="flex flex-col">
+											<label className="font-medium text-red-500 mb-1">
 												*Jenis Outlet
-											</h3>
+											</label>
 											<select
-												className="w-full border border-gray-300 p-2 rounded-m"
+												className="border border-gray-300 p-2 rounded-md"
 												name="basicOutlet"
 												value={formData.basicOutlet}
 												onChange={handleInputChange}
@@ -409,31 +429,44 @@ export const LaporanPenjualanTable = () => {
 												<option value="swasta">Swasta</option>
 											</select>
 										</div>
-
-										<textarea
-											className="w-full border border-gray-300 p-2 rounded-md"
-											placeholder="Kepada"
-											name="kepada"
-											value={formData.kepada}
-											onChange={handleInputChange}
-											rows="4"
-											required
-										></textarea>
+										<div className="flex flex-col">
+											<label className="font-medium text-red-500 mb-1">
+												*Kepada
+											</label>
+											<textarea
+												className="border border-gray-300 p-2 rounded-md"
+												placeholder="Kepada"
+												name="kepada"
+												value={formData.kepada}
+												onChange={handleInputChange}
+												rows="4"
+												required
+											></textarea>
+										</div>
 									</div>
 
-									<div className="mt-4 flex justify-end space-x-4">
+									<div className="mt-6 flex justify-end space-x-4">
 										<button
 											type="button"
-											className="bg-red-500 text-white px-4 py-2 rounded-md"
+											className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
 											onClick={() => setShowModal(false)}
+											disabled={mutation.isLoading}
 										>
 											Cancel
 										</button>
 										<button
 											type="submit"
-											className="bg-blue-500 text-white px-4 py-2 rounded-md"
+											className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 flex items-center min-w-[120px]"
+											disabled={ formLoading || mutation.isLoading}
 										>
-											Submit
+											{ formLoading || mutation.isLoading ? (
+												<>
+													<Spinner className="w-5 h-5 mr-2" />
+													Submitting...
+												</>
+											) : (
+												"Submit"
+											)}
 										</button>
 									</div>
 								</form>

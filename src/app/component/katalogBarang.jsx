@@ -19,6 +19,8 @@ export const KatalogBarangList = () => {
 	const [harga, setHarga] = useState("");
 	const [stokAwal, setStokAwal] = useState("");
 	const [searchTerm, setSearchTerm] = useState("");
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [deletingId, setDeletingId] = useState(null);
 
 	const {
 		data: katalogBarangData,
@@ -66,6 +68,7 @@ export const KatalogBarangList = () => {
 
 	const handleSubmit = async (event) => {
 		event.preventDefault();
+		setIsSubmitting(true);
 		const barangData = {
 			kode_barang: kodeBarang,
 			nama_barang: namaBarang,
@@ -73,15 +76,24 @@ export const KatalogBarangList = () => {
 			harga: Number(harga),
 			stok_awal: Number(stokAwal),
 		};
-		if (selectedId) {
-			await updateBarang({ id: selectedId, data: barangData });
-		} else {
-			await addBarang(barangData);
+		try {
+			if (selectedId) {
+				await updateBarang({ id: selectedId, data: barangData });
+			} else {
+				await addBarang(barangData);
+			}
+		} finally {
+			setIsSubmitting(false);
 		}
 	};
 
 	const handleDelete = async (id) => {
-		await deleteBarang(id);
+		setDeletingId(id);
+		try {
+			await deleteBarang(id);
+		} finally {
+			setDeletingId(null);
+		}
 	};
 
 	const filteredData = katalogBarangData?.data?.filter(
@@ -99,7 +111,7 @@ export const KatalogBarangList = () => {
 	return (
 		<div className="relative p-4">
 			<div className="flex flex-wrap justify-between items-center mb-4 gap-2 ">
-				<div className="flex flex-col w-full sm:w-[200px]" >
+				<div className="flex flex-col w-full sm:w-[200px]">
 					<h3 className="font-medium text-xs mb-1">
 						Search by Nama / Kode Barang
 					</h3>
@@ -160,9 +172,14 @@ export const KatalogBarangList = () => {
 									</button>
 									<button
 										onClick={() => handleDelete(item._id)}
-										className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+										disabled={deletingId === item._id}
+										className={`px-2 py-1 text-white rounded ${
+											deletingId === item._id
+												? "bg-red-400 cursor-not-allowed"
+												: "bg-red-600 hover:bg-red-700"
+										}`}
 									>
-										Hapus
+										{deletingId === item._id ? "Menghapus..." : "Hapus"}
 									</button>
 								</td>
 							</tr>
@@ -228,9 +245,10 @@ export const KatalogBarangList = () => {
 								</button>
 								<button
 									type="submit"
-									className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+									className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+									disabled={isSubmitting}
 								>
-									Simpan
+									{isSubmitting ? "Menyimpan..." : "Simpan"}
 								</button>
 							</div>
 						</form>
