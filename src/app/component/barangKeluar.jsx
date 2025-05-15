@@ -7,7 +7,7 @@ import {
 	addBarangKeluar,
 } from "@/app/service/barang_keluar.service";
 import { Spinner } from "./spinner";
-import { fetchKatalogBarang } from "@/app/service/katalog_barang.service"; 
+import { fetchKatalogBarang } from "@/app/service/katalog_barang.service";
 
 export const BarangKeluarTable = () => {
 	const [barangKeluar, setBarangKeluar] = useState([]);
@@ -130,9 +130,7 @@ export const BarangKeluarTable = () => {
 						/>
 					</div>
 					<div className="flex flex-col w-full sm:w-[200px]">
-						<h3 className="font-medium text-xs mb-1">
-							Search by Tanggal
-						</h3>
+						<h3 className="font-medium text-xs mb-1">Search by Tanggal</h3>
 						<input
 							type="date"
 							className="px-4 py-2 border border-gray-300 rounded-md"
@@ -141,32 +139,38 @@ export const BarangKeluarTable = () => {
 						/>
 					</div>
 				</div>
-				<button
+				{/* <button
 					className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
 					onClick={handleOpenModal}
 				>
 					Tambah Barang Keluar
-				</button>
+				</button> */}
 			</div>
 
 			<div className="overflow-x-auto bg-white shadow-md rounded-lg">
 				<table className="min-w-full table-auto">
 					<thead className="bg-gray-100">
 						<tr>
-							<th className="px-4 py-2 border">Tanggal</th>
-							<th className="px-4 py-2 border">Kode Barang</th>
-							<th className="px-4 py-2 border">Nama Barang</th>
-							<th className="px-4 py-2 border">Jumlah Keluar</th>
-							<th className="px-4 py-2 border">Keterangan</th>
+							<th className="px-4 py-2 border text-center">Tanggal</th>
+							<th className="px-4 py-2 border text-center">Kode Barang</th>
+							<th className="px-4 py-2 border text-center">Nama Barang</th>
+							<th className="px-4 py-2 border text-center">Jumlah Keluar</th>
+							<th className="px-4 py-2 border text-center">Harga Keluar</th>
+							<th className="px-4 py-2 border text-center">Keterangan</th>
 						</tr>
 					</thead>
 					<tbody>
 						{paginatedData.map((item) => (
 							<tr key={item._id} className="odd:bg-gray-50">
-								<td className="px-4 py-2 border">{item.tanggal}</td>
-								<td className="px-4 py-2 border">{item.kode_barang}</td>
-								<td className="px-4 py-2 border">{item.nama_barang}</td>
-								<td className="px-4 py-2 border">{item.qty_keluar}</td>
+								<td className="px-4 py-2 border text-center">{item.tanggal}</td>
+								<td className="px-4 py-2 border text-center">{item.kode_barang}</td>
+								<td className="px-4 py-2 border text-center">{item.nama_barang}</td>
+								<td className="px-4 py-2 border text-center">{item.qty_keluar}</td>
+								<td className="px-4 py-2 border text-center">
+									{Number.isFinite(item?.harga_satuan)
+										? `Rp ${Math.floor(item.harga_satuan).toLocaleString("id-ID")}`
+										: "Rp 0"}
+								</td>
 								<td className="px-4 py-2 border">{item.keterangan}</td>
 							</tr>
 						))}
@@ -212,78 +216,6 @@ export const BarangKeluarTable = () => {
 			</div>
 
 			{/* Modal */}
-			<div
-				className={`fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 ${openModal ? "block" : "hidden"}`}
-				onClick={handleCloseModal}
-			>
-				<div
-					className="bg-white p-6 rounded-lg w-1/3"
-					onClick={(e) => e.stopPropagation()}
-				>
-					<h2 className="text-2xl mb-4">Tambah Barang Keluar</h2>
-					<input
-						type="date"
-						name="tanggal"
-						value={formData.tanggal}
-						onChange={handleChange}
-						className="w-full mb-4 p-2 border border-gray-300 rounded-md"
-					/>
-					<select
-						name="kode_barang"
-						value={formData.kode_barang}
-						onChange={(e) => {
-							const kode_barang = e.target.value;
-							const nama_barang = data?.data?.find(
-								(barang) => barang.kode_barang === kode_barang,
-							)?.nama_barang;
-							setFormData((prevData) => ({
-								...prevData,
-								kode_barang,
-								nama_barang,
-							}));
-						}}
-						className="w-full mb-4 p-2 border border-gray-300 rounded-md"
-					>
-						<option value="">Pilih Barang</option>
-						{data?.data?.map((barang) => (
-							<option key={barang._id} value={barang.kode_barang}>
-								{barang.nama_barang}
-							</option>
-						))}
-					</select>
-					<input
-						type="number"
-						name="qty_keluar"
-						value={formData.qty_keluar}
-						onChange={handleChange}
-						className="w-full mb-4 p-2 border border-gray-300 rounded-md"
-						placeholder="Jumlah Keluar"
-					/>
-					<input
-						type="text"
-						name="keterangan"
-						value={formData.keterangan}
-						onChange={handleChange}
-						className="w-full mb-4 p-2 border border-gray-300 rounded-md"
-						placeholder="Keterangan"
-					/>
-					<div className="flex justify-end">
-						<button
-							className="px-4 py-2 bg-gray-300 rounded-lg mr-2"
-							onClick={handleCloseModal}
-						>
-							Batal
-						</button>
-						<button
-							className="px-4 py-2 bg-blue-500 text-white rounded-lg"
-							onClick={handleSubmit}
-							disabled={formLoading}
-						>
-							{formLoading ? "Loading..." : "Simpan"}
-						</button>
-					</div>
-				</div>
-			</div>
 		</div>
 	);
 };

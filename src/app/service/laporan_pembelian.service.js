@@ -29,3 +29,17 @@ export const addLaporanPembelian = async (data) => {
     throw error;
   }
 };
+
+export const getLaporanPembelianById = async (id) => {
+  try {
+    const response = await axios.get(`${API_URL}laporan/${id}`, {
+      headers: headers,
+      withCredentials: true
+    });
+    return response.data;
+  }
+  catch (error){
+    console.error(error.message)
+    throw error
+  }
+  }

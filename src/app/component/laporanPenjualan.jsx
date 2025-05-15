@@ -39,7 +39,7 @@ export const LaporanPenjualanTable = () => {
 		no_invoice: "",
 		tgl_jatuhTempo: "",
 		item: [{ _id: "", qty: 0 }],
-		ppn: 0,
+		ppn: 0.11,
 		kepada: "",
 		basicOutlet: "",
 	});
@@ -92,17 +92,17 @@ export const LaporanPenjualanTable = () => {
 				no_invoice: "",
 				tgl_jatuhTempo: "",
 				item: [{ _id: "", qty: 0 }],
-				ppn: 0,
+				ppn: 0.11,
 				kepada: "",
 				basicOutlet: "",
 			});
 			queryClient.invalidateQueries(["laporanPenjualan"]);
-      setFormLoading(false);
-      setShowModal(false)
+			setFormLoading(false);
+			setShowModal(false);
 		},
 		onError: (error) => {
-      console.error("Mutation error:", error.message);
-      setFormLoading(false);
+			console.error("Mutation error:", error.message);
+			setFormLoading(false);
 			toast.error(error.message);
 		},
 	});
@@ -133,7 +133,7 @@ export const LaporanPenjualanTable = () => {
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
-    setFormLoading(true);
+		setFormLoading(true);
 		mutation.mutate(formData);
 	};
 
@@ -231,10 +231,20 @@ export const LaporanPenjualanTable = () => {
 									<td className="px-4 py-2 text-center">
 										{laporan.tgl_jatuhTempo}
 									</td>
-									<td className="px-4 py-2 text-center">{laporan.subtotal}</td>
-									<td className="px-4 py-2 text-center">{laporan.ppn}</td>
 									<td className="px-4 py-2 text-center">
-										{laporan.grand_total}
+										{Number.isFinite(laporan?.subtotal)
+											? `Rp ${Math.floor(laporan.subtotal).toLocaleString("id-ID")}`
+											: "Rp 0"}
+									</td>
+									<td className="px-4 py-2 text-center">
+										{Number.isFinite(laporan?.ppn)
+											? `${(laporan.ppn * 100).toLocaleString("id-ID")}%`
+											: "11%"}
+									</td>
+									<td className="px-4 py-2 text-center">
+                  {Number.isFinite(laporan?.grand_total)
+											? `Rp ${Math.floor(laporan.grand_total).toLocaleString("id-ID")}`
+											: "Rp 0"}
 									</td>
 									<td className="px-4 py-2 text-center">{laporan.kepada}</td>
 									<td className="px-4 py-2 text-center">
@@ -244,7 +254,7 @@ export const LaporanPenjualanTable = () => {
 												(window.location.href = `/pages/invoiceDMS/invoice/${laporan._id}`)
 											}
 										>
-											Lihat
+											Lihat Invoice
 										</button>
 									</td>
 								</tr>
@@ -390,29 +400,6 @@ export const LaporanPenjualanTable = () => {
 												Tambah Item
 											</button>
 										</div>
-
-										<div className="flex flex-col">
-											<label className="font-medium text-red-500 mb-1">
-												*PPN (0-1) contoh: 0.1
-											</label>
-											<input
-												type="number"
-												className="border border-gray-300 p-2 rounded-md placeholder-shown:italic"
-												placeholder="0.1"
-												name="ppn"
-												value={formData.ppn}
-												onChange={(e) =>
-													setFormData((prev) => ({
-														...prev,
-														ppn: parseFloat(e.target.value) || 0,
-													}))
-												}
-												step="0.01"
-												min="0"
-												max="1"
-												required
-											/>
-										</div>
 										<div className="flex flex-col">
 											<label className="font-medium text-red-500 mb-1">
 												*Jenis Outlet
@@ -457,9 +444,9 @@ export const LaporanPenjualanTable = () => {
 										<button
 											type="submit"
 											className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 flex items-center min-w-[120px]"
-											disabled={ formLoading || mutation.isLoading}
+											disabled={formLoading || mutation.isLoading}
 										>
-											{ formLoading || mutation.isLoading ? (
+											{formLoading || mutation.isLoading ? (
 												<>
 													<Spinner className="w-5 h-5 mr-2" />
 													Submitting...

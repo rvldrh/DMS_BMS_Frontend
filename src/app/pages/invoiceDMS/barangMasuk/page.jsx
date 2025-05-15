@@ -1,4 +1,3 @@
-
 import { BarangMasukTable } from '@/app/component/barangMasuk'
 import React from 'react'
 
