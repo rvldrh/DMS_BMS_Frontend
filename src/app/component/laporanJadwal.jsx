@@ -7,6 +7,7 @@ import {
   updateLaporanRemark,
   addLaporan,
   updateLaporan,
+  getDeletedLaporanJadwal,
 } from "@/app/service/laporanJadwal.service";
 import { Moon, Sun, Plus, X } from "lucide-react";
 import { toast } from "react-toastify";
@@ -21,7 +22,7 @@ export const LaporanJadwal = () => {
   const [editableLaporanId, setEditableLaporanId] = useState(null);
   const [editedRemark, setEditedRemark] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [isLoadingM, setIsLoading] = useState(false)
+  const [isLoadingM, setIsLoading] = useState(false);
   const [newData, setNewData] = useState({
     outlet: "",
     kpdm: "",
@@ -33,10 +34,19 @@ export const LaporanJadwal = () => {
 
   const queryClient = useQueryClient();
 
+  // Query untuk laporan aktif
   const { data: laporanData, isLoading } = useQuery({
     queryKey: ["laporan-jadwal"],
     queryFn: getAllLaporan,
   });
+
+  // Query untuk laporan yang dihapus
+  const { data: deletedLaporanData, isLoading: isLoadingDeleted } = useQuery({
+    queryKey: ["laporan-jadwal-deleted"],
+    queryFn: getDeletedLaporanJadwal,
+  });
+
+  console.log(deletedLaporanData)
 
   const mutationRemark = useMutation({
     mutationFn: ({ id, remark }) => updateLaporanRemark(id, remark),
@@ -59,16 +69,15 @@ export const LaporanJadwal = () => {
       setShowModal(false);
       setNewData({ outlet: "", kpdm: "", topik_pembahasan: "", tanggal: "" });
       toast.success("Laporan berhasil ditambahkan!");
-	  setIsLoading(false)
+      setIsLoading(false);
     },
     onError: (error) => {
-      toast.error(
-        error.response?.data?.message || "Gagal menambahkan laporan.",
-      );
+      toast.error(error.response?.data?.message || "Gagal menambahkan laporan.");
+      setIsLoading(false);
     },
-	onMutate: () => {
-		setIsLoading(true)
-	}
+    onMutate: () => {
+      setIsLoading(true);
+    },
   });
 
   const mutationUpdate = useMutation({
@@ -82,9 +91,7 @@ export const LaporanJadwal = () => {
       toast.success("Laporan berhasil diperbarui!");
     },
     onError: (error) => {
-      toast.error(
-        error.response?.data?.message || "Gagal memperbarui laporan.",
-      );
+      toast.error(error.response?.data?.message || "Gagal memperbarui laporan.");
     },
   });
 
@@ -116,6 +123,8 @@ export const LaporanJadwal = () => {
     startIndex,
     startIndex + ITEMS_PER_PAGE,
   );
+
+  const paginatedDeletedData = deletedLaporanData?.data || [];
 
   const handleRemarkChange = (laporanId, currentRemark) => {
     setEditableLaporanId(laporanId);
@@ -169,9 +178,9 @@ export const LaporanJadwal = () => {
 
         <div className="bg-red-100 text-red-800 p-3 rounded-md mt-4 mb-4 text-center">
           <p>
-            <strong>Peringatan:</strong> Remark wajib diisi pada hari yang
-            sesuai dengan tanggal laporan. Jika sudah lewat tanggal, remark
-            tidak dapat diedit lagi.
+            <strong>Peringatan:</strong> Remark wajib diisi pada hari yang sesuai
+            dengan tanggal laporan. Jika sudah lewat tanggal, remark tidak dapat
+            diedit lagi.
           </p>
           <p className="mt-2">
             Jika ada masalah, silakan hubungi via WhatsApp di nomor{" "}
@@ -241,13 +250,11 @@ export const LaporanJadwal = () => {
                           </span>
                         ) : editableLaporanId === laporan._id ? (
                           <div className="flex flex-col gap-1">
-                            <div className="flex items-center gap-2">
+                            <div className negativa="flex items-center gap-2">
                               <input
                                 type="text"
                                 value={editedRemark}
-                                onChange={(e) =>
-                                  setEditedRemark(e.target.value)
-                                }
+                                onChange={(e) => setEditedRemark(e.target.value)}
                                 className="flex-1 border px-2 py-1 rounded text-black dark:text-white dark:bg-gray-800 dark:border-gray-600"
                               />
                               <button
@@ -323,9 +330,7 @@ export const LaporanJadwal = () => {
                 Page {currentPage} of {totalPages}
               </span>
               <button
-                onClick={() =>
-                  setCurrentPage((p) => Math.min(p + 1, totalPages))
-                }
+                onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
                 className="px-4 py-2 bg-blue-500 text-white rounded-md disabled:opacity-50"
                 disabled={currentPage === totalPages}
               >
@@ -334,6 +339,73 @@ export const LaporanJadwal = () => {
             </div>
           </>
         )}
+
+        {/* Tabel untuk laporan yang dihapus */}
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold mb-4 text-center">
+            Laporan yang Pernah Dikerjakan
+          </h2>
+          {isLoadingDeleted ? (
+            <div className="flex justify-center py-6">
+              <div className="animate-spin h-8 w-8 border-4 border-gray-500 border-t-transparent rounded-full"></div>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full border border-gray-400 opacity-70">
+                <thead
+                  className={`transition-colors duration-300 ${
+                    darkMode ? "bg-gray-600" : "bg-gray-300"
+                  }`}
+                >
+                  <tr>
+                    <th className="border px-4 py-2">Hari</th>
+                    <th className="border px-4 py-2">Tanggal</th>
+                    <th className="border px-4 py-2">Outlet</th>
+                    <th className="border px-4 py-2">KPDM</th>
+                    <th className="border px-4 py-2">Topik Pembahasan</th>
+                    <th className="border px-4 py-2">Remark</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedDeletedData.length > 0 ? (
+                    paginatedDeletedData.map((laporan) => (
+                      <tr
+                        key={laporan._id}
+                        className="bg-gray-100 dark:bg-gray-700 transition-colors"
+                      >
+                        <td className="border px-4 py-2">
+                          {new Date(laporan.tanggal).toLocaleDateString("id-ID", {
+                            weekday: "long",
+                          })}
+                        </td>
+                        <td className="border px-4 py-2">
+                          {new Date(laporan.tanggal).toLocaleDateString()}
+                        </td>
+                        <td className="border px-4 py-2">{laporan.outlet}</td>
+                        <td className="border px-4 py-2">{laporan.kpdm}</td>
+                        <td className="border px-4 py-2">
+                          {laporan.topik_pembahasan}
+                        </td>
+                        <td className="border px-4 py-2">
+                          {laporan.remark || "-"}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan={6}
+                        className="border px-4 py-2 text-center text-gray-500"
+                      >
+                        Tidak ada laporan yang dihapus.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
 
         {showModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -407,7 +479,7 @@ export const LaporanJadwal = () => {
                   className="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center justify-center"
                   disabled={mutationCreate.isLoading || mutationUpdate.isLoading}
                 >
-                  { isLoadingM || mutationCreate.isLoading || mutationUpdate.isLoading ? (
+                  {isLoadingM || mutationCreate.isLoading || mutationUpdate.isLoading ? (
                     <div className="flex items-center space-x-2">
                       <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
                       <span>{isEditMode ? "Memperbarui..." : "Menyimpan..."}</span>

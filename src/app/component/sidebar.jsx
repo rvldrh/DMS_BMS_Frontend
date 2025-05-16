@@ -41,7 +41,7 @@ export const Sidebar = () => {
 							<MenuItem
 								href="/pages/invoiceDMS/katalogBarang"
 								icon={<HomeIcon className="w-5 h-5" />}
-								label="KatalogBarang"
+								label="Katalog Barang"
 								className="relative flex flex-row items-center h-11 focus:outline-none hover:bg-gray-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-indigo-500 pr-6"
 							/>
 						</li>
@@ -49,7 +49,7 @@ export const Sidebar = () => {
 							<MenuItem
 								href="/pages/invoiceDMS/laporanPembelian"
 								icon={<CreditCardIcon className="w-5 h-5" />}
-								label="laporanPembelian"
+								label="laporan Pembelian"
 								className="relative flex flex-row items-center h-11 focus:outline-none hover:bg-gray-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-indigo-500 pr-6"
 							/>
 						</li>
@@ -57,7 +57,7 @@ export const Sidebar = () => {
 							<MenuItem
 								href="/pages/invoiceDMS/laporanPenjualan"
 								icon={<InboxIcon className="w-5 h-5" />}
-								label="laporanPenjualan"
+								label="laporan Penjualan"
 								className="relative flex flex-row items-center h-11 focus:outline-none hover:bg-gray-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-indigo-500 pr-6"
 							/>
 						</li>

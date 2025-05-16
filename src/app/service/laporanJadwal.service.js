@@ -12,7 +12,10 @@ export const getAllLaporan = async () => {
     });
     return res.data;
   } catch (error) {
-    console.error("Error fetching laporan:", error.response?.data || error.message);
+    console.error(
+      "Error fetching laporan:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 };
@@ -26,7 +29,10 @@ export const getLaporanById = async (id) => {
     });
     return res.data;
   } catch (error) {
-    console.error("Error fetching laporan by ID:", error.response?.data || error.message);
+    console.error(
+      "Error fetching laporan by ID:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 };
@@ -38,13 +44,12 @@ export const addLaporan = async (data) => {
       headers: {
         ...headers,
         "Content-Type": "application/json",
-
       },
       withCredentials: true,
     });
     return res.data;
   } catch (error) {
-    error.response?.data 
+    error.response?.data;
     throw error;
   }
 };
@@ -61,7 +66,7 @@ export const updateLaporan = async (id, data) => {
     });
     return res.data;
   } catch (error) {
-    error.response?.data 
+    error.response?.data;
     throw error;
   }
 };
@@ -75,25 +80,44 @@ export const deleteLaporan = async (id) => {
     });
     return res.data;
   } catch (error) {
-    console.error("Error deleting laporan:", error.response?.data || error.message);
+    console.error(
+      "Error deleting laporan:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 };
 
 // ✅ Update remark laporan (hanya sekali)
 export const updateLaporanRemark = async (id, remark) => {
-    try {
-      const res = await axios.put(`${BASE_URL}/remark/${id}`, { remark }, {
+  try {
+    const res = await axios.put(
+      `${BASE_URL}/remark/${id}`,
+      { remark },
+      {
         headers: {
           ...headers,
           "Content-Type": "application/json",
         },
         withCredentials: true,
-      });
-      return res.data;
-    } catch (error) {
-      error.response?.data
-      throw error;
-    }
-  };
-  
+      }
+    );
+    return res.data;
+  } catch (error) {
+    error.response?.data;
+    throw error;
+  }
+};
+export const getDeletedLaporanJadwal = async () => {
+  try {
+    const res = await axios.get(`${BASE_URL}/jadwal/deleted`, {
+      headers: {
+        ...headers,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    error.response?.data
+    throw error
+  }
+};
