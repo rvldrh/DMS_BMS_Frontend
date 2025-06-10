@@ -82,14 +82,22 @@ export const AddAPAR = () => {
 				</p>
 
 				<label className="text-lg font-bold text-gray-800 mt-4">Marketing</label>
-				<input
-					type="text"
+				<select
 					name="marketing"
-					placeholder="*Siapa penginput data APAR ini"
 					value={newApar.marketing}
 					onChange={handleChange}
-					className="w-full p-3 border rounded-md text-gray-900 placeholder-gray-600 bg-gray-100"
-				/>
+					className="w-full p-3 border rounded-md text-gray-900 bg-gray-100"
+				>
+					<option value="">-- Pilih Marketing --</option>
+					<option value="Agus">Agus</option>
+					<option value="Aldo">Aldo</option>
+					<option value="Didik">Didik</option>
+					<option value="Dinar">Dinar</option>
+					<option value="Guntur">Guntur</option>
+					<option value="Miftah">Miftah</option>
+					<option value="Samsul">Samsul</option>
+				</select>
+
 
 				<label className="text-lg font-bold text-gray-800 mt-4">Tanggal Exp</label>
 				<input
