@@ -407,91 +407,91 @@ export const LaporanJadwal = () => {
           )}
         </div>
 
-        {showModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md w-full max-w-md relative">
-              <button
-                className="absolute top-2 right-2 text-gray-500 hover:text-red-500"
-                onClick={() => {
-                  setShowModal(false);
-                  setIsEditMode(false);
-                  setEditLaporanId(null);
-                  setNewData({
-                    outlet: "",
-                    kpdm: "",
-                    topik_pembahasan: "",
-                    tanggal: "",
-                  });
-                }}
-              >
-                <X />
-              </button>
-              <h2 className="text-2xl font-semibold mb-4 text-black dark:text-white">
-                {isEditMode ? "Edit Laporan" : "Tambah Laporan"}
-              </h2>
-              <div className="space-y-3">
-                <input
-                  type="text"
-                  placeholder="Outlet"
-                  value={newData.outlet}
-                  onChange={(e) =>
-                    setNewData({ ...newData, outlet: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border rounded dark:bg-gray-800 dark:text-white"
-                  disabled={mutationCreate.isLoading || mutationUpdate.isLoading}
-                />
-                <input
-                  type="text"
-                  placeholder="KPDM"
-                  value={newData.kpdm}
-                  onChange={(e) =>
-                    setNewData({ ...newData, kpdm: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border rounded dark:bg-gray-800 dark:text-white"
-                  disabled={mutationCreate.isLoading || mutationUpdate.isLoading}
-                />
-                <input
-                  type="text"
-                  placeholder="Topik"
-                  value={newData.topik_pembahasan}
-                  onChange={(e) =>
-                    setNewData({ ...newData, topik_pembahasan: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border rounded dark:bg-gray-800 dark:text-white"
-                  disabled={mutationCreate.isLoading || mutationUpdate.isLoading}
-                />
-                <div className="flex flex-col space-y-1">
-                  <label className="text-sm text-gray-600 dark:text-gray-300">
-                    Tanggal
-                  </label>
+          {showModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md w-full max-w-md relative">
+                <button
+                  className="absolute top-2 right-2 text-gray-500 hover:text-red-500"
+                  onClick={() => {
+                    setShowModal(false);
+                    setIsEditMode(false);
+                    setEditLaporanId(null);
+                    setNewData({
+                      outlet: "",
+                      kpdm: "",
+                      topik_pembahasan: "",
+                      tanggal: "",
+                    });
+                  }}
+                >
+                  <X />
+                </button>
+                <h2 className="text-2xl font-semibold mb-4 text-black dark:text-white">
+                  {isEditMode ? "Edit Laporan" : "Tambah Laporan"}
+                </h2>
+                <div className="space-y-3">
                   <input
-                    type="date"
-                    value={newData.tanggal || ""}
+                    type="text"
+                    placeholder="Outlet"
+                    value={newData.outlet}
                     onChange={(e) =>
-                      setNewData({ ...newData, tanggal: e.target.value })
+                      setNewData({ ...newData, outlet: e.target.value })
                     }
                     className="w-full px-3 py-2 border rounded dark:bg-gray-800 dark:text-white"
                     disabled={mutationCreate.isLoading || mutationUpdate.isLoading}
                   />
+                  <input
+                    type="text"
+                    placeholder="KPDM"
+                    value={newData.kpdm}
+                    onChange={(e) =>
+                      setNewData({ ...newData, kpdm: e.target.value })
+                    }
+                    className="w-full px-3 py-2 border rounded dark:bg-gray-800 dark:text-white"
+                    disabled={mutationCreate.isLoading || mutationUpdate.isLoading}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Topik"
+                    value={newData.topik_pembahasan}
+                    onChange={(e) =>
+                      setNewData({ ...newData, topik_pembahasan: e.target.value })
+                    }
+                    className="w-full px-3 py-2 border rounded dark:bg-gray-800 dark:text-white"
+                    disabled={mutationCreate.isLoading || mutationUpdate.isLoading}
+                  />
+                  <div className="flex flex-col space-y-1">
+                    <label className="text-sm text-gray-600 dark:text-gray-300">
+                      Tanggal
+                    </label>
+                    <input
+                      type="date"
+                      value={newData.tanggal || ""}
+                      onChange={(e) =>
+                        setNewData({ ...newData, tanggal: e.target.value })
+                      }
+                      className="w-full px-3 py-2 border rounded dark:bg-gray-800 dark:text-white"
+                      disabled={mutationCreate.isLoading || mutationUpdate.isLoading}
+                    />
+                  </div>
+                  <button
+                    onClick={handleSave}
+                    className="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center justify-center"
+                    disabled={mutationCreate.isLoading || mutationUpdate.isLoading}
+                  >
+                    {isLoadingM || mutationCreate.isLoading || mutationUpdate.isLoading ? (
+                      <div className="flex items-center space-x-2">
+                        <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
+                        <span>{isEditMode ? "Memperbarui..." : "Menyimpan..."}</span>
+                      </div>
+                    ) : (
+                      <span>{isEditMode ? "Update" : "Simpan"}</span>
+                    )}
+                  </button>
                 </div>
-                <button
-                  onClick={handleSave}
-                  className="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center justify-center"
-                  disabled={mutationCreate.isLoading || mutationUpdate.isLoading}
-                >
-                  {isLoadingM || mutationCreate.isLoading || mutationUpdate.isLoading ? (
-                    <div className="flex items-center space-x-2">
-                      <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
-                      <span>{isEditMode ? "Memperbarui..." : "Menyimpan..."}</span>
-                    </div>
-                  ) : (
-                    <span>{isEditMode ? "Update" : "Simpan"}</span>
-                  )}
-                </button>
               </div>
             </div>
-          </div>
-        )}
+          )}
       </div>
       <ToastContainer position="top-center" />
     </div>
