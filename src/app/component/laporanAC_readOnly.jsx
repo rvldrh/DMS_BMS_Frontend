@@ -6,7 +6,7 @@ import { Moon, Sun, Pencil } from "lucide-react";
 
 export const JadwalACReadOnly = () => {
     const queryClient = useQueryClient();
-    
+
     const [darkMode, setDarkMode] = useState(false);
     const [selectedMonth, setSelectedMonth] = useState("");
     const [selectedYear, setSelectedYear] = useState("");
@@ -14,6 +14,7 @@ export const JadwalACReadOnly = () => {
     const [selectedStatus, setSelectedStatus] = useState("");
     const [selectedTeknisi, setSelectedTeknisi] = useState("");
     const [editId, setEditId] = useState(null);
+    const [modalImage, setModalImage] = useState(null);
 
     const [formData, setFormData] = useState({
         tanggalPengerjaan: "",
@@ -83,6 +84,10 @@ export const JadwalACReadOnly = () => {
     const resetForm = () => {
         setFormData({ tanggalPengerjaan: "", ruangan: "", status: "", hasil: "", teknisi: "", fotoAwal: null, fotoPengerjaan: null });
     };
+
+    const openModal = (url) => setModalImage(url);
+    const closeModal = () => setModalImage(null);
+
 
     const dropdownStyle = `${darkMode ? "bg-gray-800 text-white" : "bg-gray-200 text-black"} p-2 rounded-md`;
 
@@ -162,8 +167,38 @@ export const JadwalACReadOnly = () => {
                                             </td>
                                             <td className="border px-4 py-2">{item.hasil || ""}</td>
                                             <td className="border px-4 py-2">{item.teknisi}</td>
-                                            <td className="border px-4 py-2 text-center">{item.fotoAwal ? <img src={item.fotoAwal} className="w-20 h-20 object-cover rounded" /> : "-"}</td>
-                                            <td className="border px-4 py-2 text-center">{item.fotoPengerjaan ? <img src={item.fotoPengerjaan} className="w-20 h-20 object-cover rounded" /> : "-"}</td>
+                                            <td className="border px-4 py-2 text-center">
+                                                {item.fotoAwal ? (
+                                                    <div className="relative group w-20 h-20 mx-auto">
+                                                        <img src={item.fotoAwal} className="w-full h-full object-cover rounded transition duration-300 group-hover:opacity-80" />
+                                                        <button
+                                                            onClick={() => openModal(item.fotoAwal)}
+                                                            className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white text-sm font-semibold rounded opacity-0 group-hover:opacity-100 transition"
+                                                        >
+                                                            Lihat Foto
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    "-"
+                                                )}
+                                            </td>
+
+                                            <td className="border px-4 py-2 text-center">
+                                                {item.fotoPengerjaan ? (
+                                                    <div className="relative group w-20 h-20 mx-auto">
+                                                        <img src={item.fotoPengerjaan} className="w-full h-full object-cover rounded transition duration-300 group-hover:opacity-80" />
+                                                        <button
+                                                            onClick={() => openModal(item.fotoPengerjaan)}
+                                                            className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white text-sm font-semibold rounded opacity-0 group-hover:opacity-100 transition"
+                                                        >
+                                                            Lihat Foto
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    "-"
+                                                )}
+                                            </td>
+
                                         </tr>
                                     ))}
                                 </tbody>
@@ -178,6 +213,19 @@ export const JadwalACReadOnly = () => {
                     </>
                 )}
             </div>
+            {modalImage && (
+                <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+                    <div className="relative max-w-3xl max-h-[90vh] overflow-auto">
+                        <img src={modalImage} className="rounded max-h-[90vh]" />
+                        <button
+                            onClick={closeModal}
+                            className="absolute top-2 right-2 bg-white text-black px-3 py-1 rounded shadow hover:bg-gray-200"
+                        >
+                            Tutup
+                        </button>
+                    </div>
+                </div>
+            )}
 
         </div>
     );
