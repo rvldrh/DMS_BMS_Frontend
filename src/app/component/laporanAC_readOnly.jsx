@@ -141,7 +141,38 @@ export const JadwalACReadOnly = () => {
                                                 </span>
 
                                             </td>
-                                            <td className="border px-4 py-2">{item.hasil || ""}</td>
+                                            <td className="border px-4 py-2">
+                                                <ul className="list-disc list-inside space-y-1">
+                                                    {Array.isArray(item.hasil) && item.hasil.length > 0 ? (
+                                                        item.hasil.map((h, i) => (
+                                                            <li key={i}>
+                                                                {h}
+                                                                {" - "}
+                                                                <span className="text-xs text-gray-500 italic">
+                                                                    {i === 0
+                                                                        ? new Date(item.createdAt).toLocaleString("id-ID", {
+                                                                            day: "numeric",
+                                                                            month: "long",
+                                                                            year: "numeric",
+                                                                            hour: "2-digit",
+                                                                            minute: "2-digit",
+                                                                        })
+                                                                        : new Date(item.updatedAt).toLocaleString("id-ID", {
+                                                                            day: "numeric",
+                                                                            month: "long",
+                                                                            year: "numeric",
+                                                                            hour: "2-digit",
+                                                                            minute: "2-digit",
+                                                                        })}
+                                                                </span>
+                                                            </li>
+                                                        ))
+                                                    ) : (
+                                                        <li className="italic text-gray-400">Belum ada hasil</li>
+                                                    )}
+                                                </ul>
+                                            </td>
+
                                             <td className="border px-4 py-2">{item.teknisi}</td>
                                             <td className="border px-4 py-2 text-center">
                                                 {item.fotoAwal ? (
