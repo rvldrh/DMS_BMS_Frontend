@@ -57,30 +57,6 @@ export const JadwalACReadOnly = () => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const paginatedData = filteredData.slice(startIndex, startIndex + itemsPerPage);
 
-    const mutationAdd = useMutation({
-        mutationFn: addLaporan,
-        onSuccess: () => {
-            queryClient.invalidateQueries(["laporan-ac"]);
-            setOpenModal(false);
-            resetForm();
-        },
-        onError: () => alert("Gagal menambahkan laporan"),
-    });
-
-    const mutationUpdate = useMutation({
-        mutationFn: ({ id, formData }) => updateLaporan(id, formData),
-        onSuccess: () => {
-            queryClient.invalidateQueries(["laporan-ac"]);
-            setOpenModal(false);
-            setEditId(null);
-            resetForm();
-        },
-        onError: (err) => {
-            console.error("Error updating laporan:", err);
-            alert("Gagal memperbarui laporan");
-        },
-    });
-
     const resetForm = () => {
         setFormData({ tanggalPengerjaan: "", ruangan: "", status: "", hasil: "", teknisi: "", fotoAwal: null, fotoPengerjaan: null });
     };
@@ -157,7 +133,7 @@ export const JadwalACReadOnly = () => {
     ${item.status === "Pembersihan"
                                                             ? "bg-green-100 text-green-700"
                                                             : item.status === "Kerusakan"
-                                                                ? "bg-yellow-100 text-yellow-700"
+                                                                ? "bg-red-100 text-red-700"
                                                                 : "bg-gray-100 text-gray-700"
                                                         }`}
                                                 >

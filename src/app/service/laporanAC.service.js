@@ -95,4 +95,15 @@ export const deleteLaporan = async (id) => {
   }
 };
 
-// Ambil laporan berdasarkan tanggal (YYYY-MM-DD)
+export const addHasilToLaporan = async (id, hasil) => {
+  try {
+    const res = await axios.put(`${BASE_URL}/${id}/hasil`, { hasil }, {
+      headers,
+      withCredentials: true,
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error adding hasil to laporan:", error.response?.data || error.message);
+    throw error;
+  }
+};
