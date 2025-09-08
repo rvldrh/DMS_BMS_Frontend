@@ -101,7 +101,19 @@ export const DaftarJadwalAC = () => {
         },
     });
 
-    const handleChange = async (event) => {
+    const handleChange = (e) => {
+        const { name, value, files } = e.target;
+        setFormData(prev => ({
+          ...prev,
+          [name]: files ? files[0] : value,
+        }));
+        
+    };
+    const handleEditHasil = (laporan) => {
+        setSelectedLaporan(laporan);
+        setOpenEditHasilModal(true);
+    };
+    const handleFileChange = async (event) => {
         const { name, files } = event.target;
         const file = files[0];
     
@@ -414,7 +426,7 @@ export const DaftarJadwalAC = () => {
                                     name="fotoAwal"
                                     accept="image/"
                                     capture="environment"
-                                    onChange={handleChange}
+                                    onChange={handleFileChange}
                                     className="w-full px-3 py-2 border rounded text-black dark:bg-gray-800 dark:text-white dark:border-gray-700 file:dark:text-white"
                                     />
                             </div>
@@ -426,7 +438,7 @@ export const DaftarJadwalAC = () => {
                                     name="fotoPengerjaan"
                                     accept="image/"
                                     capture="environment"
-                                    onChange={handleChange}
+                                    onChange={handleFileChange}
                                     className="w-full px-3 py-2 border rounded text-black dark:bg-gray-800 dark:text-white dark:border-gray-700 file:dark:text-white"
                                 />
                             </div>
