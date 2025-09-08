@@ -103,9 +103,10 @@ export const DaftarJadwalAC = () => {
     const handleChange = (e) => {
         const { name, value, files } = e.target;
         setFormData(prev => ({
-            ...prev,
-            [name]: files ? files[0] : value,
+          ...prev,
+          [name]: files ? files[0] : value,
         }));
+        
     };
     const handleEditHasil = (laporan) => {
         setSelectedLaporan(laporan);
@@ -385,9 +386,11 @@ export const DaftarJadwalAC = () => {
                                 <input
                                     type="file"
                                     name="fotoAwal"
+                                    accept="image/"
+                                    capture="environment"
                                     onChange={handleChange}
                                     className="w-full px-3 py-2 border rounded text-black dark:bg-gray-800 dark:text-white dark:border-gray-700 file:dark:text-white"
-                                />
+                                    />
                             </div>
 
                             <div>
@@ -395,6 +398,8 @@ export const DaftarJadwalAC = () => {
                                 <input
                                     type="file"
                                     name="fotoPengerjaan"
+                                    accept="image/"
+                                    capture="environment"
                                     onChange={handleChange}
                                     className="w-full px-3 py-2 border rounded text-black dark:bg-gray-800 dark:text-white dark:border-gray-700 file:dark:text-white"
                                 />
