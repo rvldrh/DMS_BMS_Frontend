@@ -104,34 +104,34 @@ export const DaftarJadwalAC = () => {
 // Ganti fungsi handleChange yang lama dengan yang ini
 const handleChange = async (e) => {
     const { name, value, files } = e.target;
-
-    if (files) {
+    
+    // Periksa apakah ini input file
+    if (files && files.length > 0) {
         const file = files[0];
-        if (file) {
-            console.log('Original size:', file.size / 1024 / 1024, 'MB');
+        console.log('Original size:', file.size / 1024 / 1024, 'MB');
 
-            const options = {
-                maxSizeMB: 1,
-                maxWidthOrHeight: 1024,
-                useWebWorker: true,
-            };
+        const options = {
+            maxSizeMB: 1,
+            maxWidthOrHeight: 1024,
+            useWebWorker: true,
+        };
 
-            try {
-                const compressedFile = await imageCompression(file, options);
-                console.log('Compressed size:', compressedFile.size / 1024 / 1024, 'MB');
-                setFormData(prev => ({
-                    ...prev,
-                    [name]: compressedFile
-                }));
-            } catch (error) {
-                console.error('Error saat kompresi gambar:', error);
-                setFormData(prev => ({
-                    ...prev,
-                    [name]: file
-                }));
-            }
+        try {
+            const compressedFile = await imageCompression(file, options);
+            console.log('Compressed size:', compressedFile.size / 1024 / 1024, 'MB');
+            setFormData(prev => ({
+                ...prev,
+                [name]: compressedFile
+            }));
+        } catch (error) {
+            console.error('Error saat kompresi gambar:', error);
+            setFormData(prev => ({
+                ...prev,
+                [name]: file
+            }));
         }
     } else {
+        // Ini adalah input teks/dropdown biasa
         setFormData(prev => ({
             ...prev,
             [name]: value
