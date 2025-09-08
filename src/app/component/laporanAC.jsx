@@ -101,54 +101,49 @@ export const DaftarJadwalAC = () => {
         },
     });
 
-    const handleChange = (e) => {
-        const { name, value, files } = e.target;
-        setFormData(prev => ({
-          ...prev,
-          [name]: files ? files[0] : value,
-        }));
-        
-    };
-    const handleEditHasil = (laporan) => {
-        setSelectedLaporan(laporan);
-        setOpenEditHasilModal(true);
-    };
-    const handleFileChange = async (event) => {
-        const { name, files } = event.target;
+// Ganti fungsi handleChange yang lama dengan yang ini
+const handleChange = async (e) => {
+    const { name, value, files } = e.target;
+
+    if (files) {
         const file = files[0];
-    
         if (file) {
-            console.log('Original file:', file);
             console.log('Original size:', file.size / 1024 / 1024, 'MB');
-    
-            // Definisikan opsi kompresi
+
             const options = {
-                maxSizeMB: 1,           // Maksimum ukuran 1 MB
-                maxWidthOrHeight: 1024, // Maksimum lebar atau tinggi 1024px
+                maxSizeMB: 1,
+                maxWidthOrHeight: 1024,
                 useWebWorker: true,
             };
-    
+
             try {
-                // Lakukan kompresi
                 const compressedFile = await imageCompression(file, options);
-    
-                console.log('Compressed file:', compressedFile);
                 console.log('Compressed size:', compressedFile.size / 1024 / 1024, 'MB');
-    
-                // Update state dengan file yang sudah dikompres
                 setFormData(prev => ({
                     ...prev,
                     [name]: compressedFile
                 }));
             } catch (error) {
                 console.error('Error saat kompresi gambar:', error);
-                // Lanjutkan dengan file asli jika kompresi gagal
                 setFormData(prev => ({
                     ...prev,
                     [name]: file
                 }));
             }
         }
+    } else {
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    }
+};
+
+// Pastikan semua input form Anda menggunakan fungsi ini
+// <input ... onChange={handleChange} />
+    const handleEditHasil = (laporan) => {
+        setSelectedLaporan(laporan);
+        setOpenEditHasilModal(true);
     };
 
 
@@ -426,7 +421,7 @@ export const DaftarJadwalAC = () => {
                                     name="fotoAwal"
                                     accept="image/"
                                     capture="environment"
-                                    onChange={handleFileChange}
+                                    onChange={handleChange}
                                     className="w-full px-3 py-2 border rounded text-black dark:bg-gray-800 dark:text-white dark:border-gray-700 file:dark:text-white"
                                     />
                             </div>
@@ -438,7 +433,7 @@ export const DaftarJadwalAC = () => {
                                     name="fotoPengerjaan"
                                     accept="image/"
                                     capture="environment"
-                                    onChange={handleFileChange}
+                                    onChange={handleChange}
                                     className="w-full px-3 py-2 border rounded text-black dark:bg-gray-800 dark:text-white dark:border-gray-700 file:dark:text-white"
                                 />
                             </div>
