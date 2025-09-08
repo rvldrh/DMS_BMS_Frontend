@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getAllLaporan, addLaporan, updateLaporan } from "@/app/service/laporanAC.service";
 import { Moon, Sun, Pencil } from "lucide-react";
 import { addHasilToLaporan } from "@/app/service/laporanAC.service";
+import imageCompression from 'browser-image-compression';
 
 export const DaftarJadwalAC = () => {
     const queryClient = useQueryClient();
@@ -100,17 +101,42 @@ export const DaftarJadwalAC = () => {
         },
     });
 
-    const handleChange = (e) => {
-        const { name, value, files } = e.target;
-        setFormData(prev => ({
-          ...prev,
-          [name]: files ? files[0] : value,
-        }));
-        
-    };
-    const handleEditHasil = (laporan) => {
-        setSelectedLaporan(laporan);
-        setOpenEditHasilModal(true);
+    const handleChange = async (event) => {
+        const { name, files } = event.target;
+        const file = files[0];
+    
+        if (file) {
+            console.log('Original file:', file);
+            console.log('Original size:', file.size / 1024 / 1024, 'MB');
+    
+            // Definisikan opsi kompresi
+            const options = {
+                maxSizeMB: 1,           // Maksimum ukuran 1 MB
+                maxWidthOrHeight: 1024, // Maksimum lebar atau tinggi 1024px
+                useWebWorker: true,
+            };
+    
+            try {
+                // Lakukan kompresi
+                const compressedFile = await imageCompression(file, options);
+    
+                console.log('Compressed file:', compressedFile);
+                console.log('Compressed size:', compressedFile.size / 1024 / 1024, 'MB');
+    
+                // Update state dengan file yang sudah dikompres
+                setFormData(prev => ({
+                    ...prev,
+                    [name]: compressedFile
+                }));
+            } catch (error) {
+                console.error('Error saat kompresi gambar:', error);
+                // Lanjutkan dengan file asli jika kompresi gagal
+                setFormData(prev => ({
+                    ...prev,
+                    [name]: file
+                }));
+            }
+        }
     };
 
 
