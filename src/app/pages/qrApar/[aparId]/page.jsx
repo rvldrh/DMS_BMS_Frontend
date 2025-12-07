@@ -15,11 +15,16 @@ export default function DetailApar({ params }) {
     });
 
   const Detail = ({ label, value }) => (
-    <div className="flex justify-between text-sm">
-      <span className="font-medium">{label}</span>
-      <span>{value}</span>
+    <div className="flex flex-col py-3">
+      <span className="text-xs text-gray-500 uppercase tracking-wide">
+        {label}
+      </span>
+      <span className="text-base font-semibold text-gray-800">
+        {value}
+      </span>
     </div>
   );
+
 
   function LoadingSkeleton() {
     return (
@@ -31,7 +36,7 @@ export default function DetailApar({ params }) {
       </div>
     );
   }
-  
+
   function ErrorMessage() {
     return (
       <div className="max-w-md mx-auto p-6 text-center text-red-600 font-semibold">
@@ -51,9 +56,10 @@ export default function DetailApar({ params }) {
     <div className="max-w-md mx-auto p-5 mt-6 space-y-5">
       {/* Header */}
       <div className="flex flex-col items-center space-y-1">
-        <span className={"px-3 py-1 text-xs font-semibold bg-blue-400 rounded-full text-whitehbbbbnggggggggggggggggggggggggggg-=[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[g2qw1wn  vvvvvvvvvvvv3e4/"}>
+        <span className="px-3 py-1 text-xs font-semibold bg-blue-500 rounded-full text-white shadow-sm">
           Informasi APAR
         </span>
+
         <h1 className="text-3xl text-center font-extrabold tracking-tight bg-gradient-to-r from-gray-800 to-gray-500 bg-clip-text text-transparent">
           {data.jenis}
         </h1>
@@ -70,12 +76,13 @@ export default function DetailApar({ params }) {
       </div>
 
       {/* Detail card */}
-      <div className="bg-white shadow-md border rounded-2xl divide-y">
+      <div className="bg-white shadow-md border rounded-2xl px-5 py-3 space-y-2">
         <Detail label="Tanggal Isi" value={formatDate(data.tanggal_isi)} />
         <Detail label="Tanggal Expired" value={formatDate(data.tanggal_exp)} />
         <Detail label="Outlet" value={data.outlet} />
         <Detail label="Marketing" value={data.marketing} />
       </div>
+
 
       {/* Footer / reminder */}
       <p className="text-center text-gray-500 text-xs mt-2">
